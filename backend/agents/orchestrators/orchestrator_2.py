@@ -150,21 +150,21 @@ class InvestmentOrchestrator(BaseAgent):
         
         market_context = news_result.get("output", "")
         
-        # Step 3: Stock Agent - Growth Recommendations (Top 5)
+        # Step 3: Stock Agent - Growth Recommendations (Top 10)
         logger.info("Step 3: Running Stock Agent")
         stock_input = (
             f"Based on this financial profile: {surplus_context}\n"
             f"And these market trends: {market_context}\n"
-            f"Recommend exactly TOP 5 Stocks, Mutual Funds, or SIPs for growth."
+            f"Recommend exactly TOP 10 Stocks, Mutual Funds, or SIPs for growth."
         )
         stock_result = await self._run_stock_agent(stock_input, context)
         results["stock"] = stock_result
         
-        # Step 4: Investment Agent - Safety Recommendations (Top 5)
+        # Step 4: Investment Agent - Safety Recommendations (Top 10)
         logger.info("Step 4: Running Investment Agent")
         invest_input = (
             f"Based on this financial profile: {surplus_context}\n"
-            f"Recommend exactly TOP 5 Fixed Income options (FD, RD, PSU) for safety and stability."
+            f"Recommend exactly TOP 10 Fixed Income options (FD, RD, PSU) for safety and stability."
         )
         invest_result = await self._run_investment_agent(invest_input, context)
         results["investment"] = invest_result

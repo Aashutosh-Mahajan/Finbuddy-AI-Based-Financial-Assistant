@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "FinBuddy"
     APP_ENV: str = "development"
     DEBUG: bool = True
+    SQL_ECHO: bool = False
     SECRET_KEY: str = "your-super-secret-key-change-in-production"
     API_V1_PREFIX: str = "/api/v1"
     

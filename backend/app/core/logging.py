@@ -62,7 +62,20 @@ def setup_logging() -> None:
     # Root logger configuration
     root_logger = logging.getLogger()
     root_logger.handlers = [handler]
-    root_logger.setLevel(getattr(logging, settings.LOG_LEVEL))
+    level_raw = settings.LOG_LEVEL
+    level = logging.INFO
+    try:
+        if isinstance(level_raw, int):
+            level = level_raw
+        else:
+            level_str = str(level_raw).upper().strip()
+            if level_str.isdigit():
+                level = int(level_str)
+            else:
+                level = getattr(logging, level_str, logging.INFO)
+    except Exception:
+        level = logging.INFO
+    root_logger.setLevel(level)
     
     # Quiet noisy loggers
     logging.getLogger("httpx").setLevel(logging.WARNING)

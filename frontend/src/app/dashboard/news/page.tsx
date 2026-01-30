@@ -13,6 +13,7 @@ import {
     MessageCircle,
     Loader2,
     RefreshCw,
+    ImageOff,
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/layouts/DashboardLayout'
 import { formatDate } from '@/lib/utils'
@@ -28,6 +29,50 @@ interface NewsItem {
     date: string
     category: string
     imageUrl: string
+    url: string
+}
+
+// Image component with fallback
+function NewsImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+    const [imgError, setImgError] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
+    const fallbackImages = [
+        'https://images.unsplash.com/photo-1611974765270-ca1258634369?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?w=800&auto=format&fit=crop',
+    ]
+
+    const handleError = () => {
+        setImgError(true)
+        setIsLoading(false)
+    }
+
+    const imageSrc = imgError 
+        ? fallbackImages[Math.floor(Math.random() * fallbackImages.length)]
+        : src
+
+    return (
+        <div className={`relative ${className}`}>
+            {isLoading && (
+                <div className="absolute inset-0 bg-slate-800 flex items-center justify-center">
+                    <Loader2 className="w-6 h-6 animate-spin text-slate-500" />
+                </div>
+            )}
+            <img
+                src={imageSrc}
+                alt={alt}
+                className={`w-full h-full object-cover transition-all duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                onError={handleError}
+                onLoad={() => setIsLoading(false)}
+            />
+            {imgError && !isLoading && (
+                <div className="absolute bottom-2 right-2 bg-slate-900/80 rounded px-2 py-1">
+                    <ImageOff className="w-3 h-3 text-slate-400" />
+                </div>
+            )}
+        </div>
+    )
 }
 
 export default function NewsPage() {
@@ -50,6 +95,7 @@ export default function NewsPage() {
                     date: item.date || new Date().toISOString(),
                     category: item.category?.toLowerCase() || 'market',
                     imageUrl: item.imageUrl || `https://images.unsplash.com/photo-1611974765270-ca1258634369?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3`,
+                    url: item.url || '',
                 }))
                 setNewsItems(apiNews)
             } else {
@@ -102,12 +148,13 @@ export default function NewsPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="relative h-96 rounded-2xl overflow-hidden group cursor-pointer"
+                        onClick={() => newsItems[1].url && window.open(newsItems[1].url, '_blank', 'noopener,noreferrer')}
                     >
                         <div className="absolute inset-0">
-                            <img
+                            <NewsImage
                                 src={newsItems[1].imageUrl}
                                 alt="Featured"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                className="w-full h-full"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
                         </div>
@@ -129,6 +176,15 @@ export default function NewsPage() {
                                 </span>
                                 <span>•</span>
                                 <span>{formatDate(newsItems[1].date)}</span>
+                                {newsItems[1].url && (
+                                    <>
+                                        <span>•</span>
+                                        <span className="flex items-center text-primary-400">
+                                            <ExternalLink className="w-4 h-4 mr-1" />
+                                            Read Article
+                                        </span>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </motion.div>
@@ -145,10 +201,10 @@ export default function NewsPage() {
                             className="glass-card overflow-hidden hover:border-primary-500/50 transition-all group flex flex-col h-full"
                         >
                             <div className="relative h-48 overflow-hidden">
-                                <img
+                                <NewsImage
                                     src={news.imageUrl}
                                     alt={news.title}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    className="h-full transition-transform duration-500 group-hover:scale-110"
                                 />
                                 <div className="absolute top-4 right-4">
                                     <span className={`px-2 py-1 rounded text-xs font-bold ${news.sentiment === 'Positive' ? 'bg-green-500/90 text-white' :
@@ -182,12 +238,38 @@ export default function NewsPage() {
                                 </div>
 
                                 <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
-                                    <button className="text-slate-400 hover:text-white transition-colors">
+                                    <button 
+                                        className="text-slate-400 hover:text-white transition-colors"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            if (navigator.share) {
+                                                navigator.share({
+                                                    title: news.title,
+                                                    text: news.summary,
+                                                    url: news.url || window.location.href
+                                                })
+                                            } else if (news.url) {
+                                                navigator.clipboard.writeText(news.url)
+                                            }
+                                        }}
+                                    >
                                         <Share2 className="w-5 h-5" />
                                     </button>
-                                    <button className="flex items-center text-sm font-medium text-primary-400 hover:text-primary-300 transition-colors">
+                                    <a
+                                        href={news.url || '#'}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => {
+                                            if (!news.url) e.preventDefault()
+                                        }}
+                                        className={`flex items-center text-sm font-medium transition-colors ${
+                                            news.url 
+                                                ? 'text-primary-400 hover:text-primary-300 cursor-pointer' 
+                                                : 'text-slate-500 cursor-not-allowed'
+                                        }`}
+                                    >
                                         Read Full Story <ExternalLink className="w-4 h-4 ml-1" />
-                                    </button>
+                                    </a>
                                     <button className="text-slate-400 hover:text-white transition-colors">
                                         <Bookmark className="w-5 h-5" />
                                     </button>
@@ -196,6 +278,29 @@ export default function NewsPage() {
                         </motion.div>
                     ))}
                 </div>
+                
+                {/* Loading State */}
+                {isLoading && (
+                    <div className="flex items-center justify-center py-12">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary-400" />
+                        <span className="ml-3 text-slate-400">Fetching latest news...</span>
+                    </div>
+                )}
+                
+                {/* Empty State */}
+                {!isLoading && filteredNews.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <Newspaper className="w-16 h-16 text-slate-600 mb-4" />
+                        <h3 className="text-lg font-semibold text-white mb-2">No News Available</h3>
+                        <p className="text-slate-400 mb-4">We couldn't find any news articles at the moment.</p>
+                        <button
+                            onClick={fetchNews}
+                            className="flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                        >
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Refresh News
+                        </button>
+                    </div>
                 )}
             </div>
         </DashboardLayout>

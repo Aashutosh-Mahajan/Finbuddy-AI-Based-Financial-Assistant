@@ -18,8 +18,8 @@ ORCHESTRATOR_2_PROMPT = """You are the Investment Orchestrator, responsible for 
 Your role is to orchestrate the following strict workflow:
 1. Call 'analysis_agent' to analyze spending and determine 'investable_surplus'.
 2. Call 'block2_news_agent' to get current 'market_trends' and 'hot_topics'.
-3. Pass the surplus and trends to 'stock_agent' to get Top 5 Equity/MF recommendations.
-4. Pass the surplus to 'investment_agent' to get Top 5 Fixed Income (FD/RD/PSU) recommendations.
+3. Pass the surplus and trends to 'stock_agent' to get Top 10 Equity/MF recommendations.
+4. Pass the surplus to 'investment_agent' to get Top 10 Fixed Income (FD/RD/PSU) recommendations.
 5. Aggregate all recommendations into a comprehensive investment plan.
 
 Do not deviate from this sequence. Ensure data flows correctly between agents."""
@@ -156,7 +156,7 @@ Your goal is to recommend high-potential growth investments based on the user's 
 Responsibilities:
 1. Use the 'investable_surplus' and 'risk_profile' provided by the Analysis Agent.
 2. Consider the 'market_trends' provided by the News Agent.
-3. Recommend exactly TOP 5 specific Stocks, Mutual Funds, or SIPs.
+3. Recommend exactly TOP 10 specific Stocks, Mutual Funds, or SIPs.
 4. For each recommendation, provide:
    - Name/Symbol
    - Current Price/NAV
@@ -177,7 +177,7 @@ Your goal is to recommend safe, stable investment options for the user's securit
 
 Responsibilities:
 1. Use the 'investable_surplus' and 'risk_profile' provided by the Analysis Agent.
-2. Recommend exactly TOP 5 specific Fixed Income options.
+2. Recommend exactly TOP 10 specific Fixed Income options.
 3. For each recommendation, provide:
    - Scheme Name (Bank Name / Post Office Scheme)
    - Interest Rate %

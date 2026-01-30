@@ -9,7 +9,8 @@ import json
 
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent
-from langchain.memory import ConversationBufferMemory
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.tools import BaseTool
@@ -42,19 +43,22 @@ class BaseAgent(ABC):
         self.system_prompt = system_prompt
         self.tools = tools or []
         
-        # Initialize LLM with GPT-5.1
-        self.llm = ChatOpenAI(
-            model=settings.OPENAI_MODEL,  # GPT-5.1
-            temperature=temperature or settings.OPENAI_TEMPERATURE,
-            max_tokens=max_tokens or settings.OPENAI_MAX_TOKENS,
-            api_key=settings.OPENAI_API_KEY
-        )
+        # Initialize LLM.
+        # NOTE: Token limit parameters vary across OpenAI/SDK/LangChain versions.
+        # To avoid hard failures (e.g., unsupported `max_tokens` / `max_completion_tokens`),
+        # we do not pass any token-limit parameter here.
+        model_name = settings.OPENAI_MODEL
+
+        llm_kwargs: Dict[str, Any] = {
+            "model": model_name,
+            "temperature": temperature or settings.OPENAI_TEMPERATURE,
+            "api_key": settings.OPENAI_API_KEY,
+        }
+
+        self.llm = ChatOpenAI(**llm_kwargs)
         
-        # Memory for conversation context
-        self.memory = ConversationBufferMemory(
-            memory_key="chat_history",
-            return_messages=True
-        )
+        # Memory for conversation context using ChatMessageHistory
+        self.chat_history = ChatMessageHistory()
         
         # Build the agent
         self._build_agent()
@@ -80,7 +84,6 @@ class BaseAgent(ABC):
             self.executor = AgentExecutor(
                 agent=agent,
                 tools=self.tools,
-                memory=self.memory,
                 verbose=settings.DEBUG,
                 handle_parsing_errors=True,
                 max_iterations=10
@@ -114,17 +117,27 @@ class BaseAgent(ABC):
                 full_input = f"{input_text}\n\nContext:\n{context_str}"
             
             if self.executor:
-                # Run with agent executor
-                result = await self.executor.ainvoke({"input": full_input})
+                # Run with agent executor, including chat history
+                result = await self.executor.ainvoke({
+                    "input": full_input,
+                    "chat_history": self.chat_history.messages
+                })
                 output = result.get("output", "")
+                # Update chat history
+                self.chat_history.add_user_message(full_input)
+                self.chat_history.add_ai_message(output)
             else:
                 # Run with simple LLM
                 messages = [
                     SystemMessage(content=self.system_prompt),
+                    *self.chat_history.messages,
                     HumanMessage(content=full_input)
                 ]
                 response = await self.llm.ainvoke(messages)
                 output = response.content
+                # Update chat history
+                self.chat_history.add_user_message(full_input)
+                self.chat_history.add_ai_message(output)
             
             end_time = datetime.utcnow()
             duration_ms = (end_time - start_time).total_seconds() * 1000

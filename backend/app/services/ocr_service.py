@@ -200,8 +200,7 @@ class OCRService:
                             }
                         ]
                     }
-                ],
-                max_tokens=500
+                ]
             )
             
             return {

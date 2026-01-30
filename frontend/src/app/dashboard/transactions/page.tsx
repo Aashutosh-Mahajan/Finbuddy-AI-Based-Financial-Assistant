@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
     Wallet,
@@ -15,30 +15,83 @@ import {
     ShoppingBag,
     Coffee,
     Zap,
+    Loader2,
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/layouts/DashboardLayout'
 import { formatCurrency, formatDate, getCategoryColor, getCategoryIcon } from '@/lib/utils'
 import { useAppDispatch, useAppSelector, RootState } from '@/store/hooks'
 import { fetchTransactions, fetchTransactionStats } from '@/store/slices/transactionsSlice'
 
+// Loading skeleton component for fast perceived loading
+function TransactionSkeleton() {
+    return (
+        <div className="animate-pulse">
+            {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-center px-6 py-4 border-b border-slate-700">
+                    <div className="w-8 h-8 rounded-lg bg-slate-700 mr-3" />
+                    <div className="flex-1">
+                        <div className="h-4 bg-slate-700 rounded w-32 mb-2" />
+                        <div className="h-3 bg-slate-700/50 rounded w-20" />
+                    </div>
+                    <div className="h-4 bg-slate-700 rounded w-20" />
+                </div>
+            ))}
+        </div>
+    )
+}
+
+// Stats skeleton for loading state
+function StatsSkeleton() {
+    return (
+        <div className="glass-card p-6 animate-pulse">
+            <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-slate-700" />
+                <div className="h-4 bg-slate-700 rounded w-16" />
+            </div>
+            <div className="h-3 bg-slate-700/50 rounded w-24 mb-2" />
+            <div className="h-6 bg-slate-700 rounded w-32" />
+        </div>
+    )
+}
+
 export default function TransactionsPage() {
     const dispatch = useAppDispatch()
     const { transactions, stats, isLoading } = useAppSelector((state: any) => state.transactions)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedCategory, setSelectedCategory] = useState('All')
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
 
     useEffect(() => {
-        dispatch(fetchTransactions({}))
-        dispatch(fetchTransactionStats('month'))
+        // Fetch both in parallel for faster loading
+        const loadData = async () => {
+            await Promise.all([
+                dispatch(fetchTransactions({})),
+                dispatch(fetchTransactionStats('month'))
+            ])
+            setIsInitialLoad(false)
+        }
+        
+        // Only fetch if we don't have data already (prevents re-fetch on tab switch)
+        if (transactions.length === 0 || !stats) {
+            loadData()
+        } else {
+            setIsInitialLoad(false)
+        }
     }, [dispatch])
 
-    // Get recurring transactions from database (filter transactions marked as recurring)
-    const recurringPayments = transactions.filter((t: any) => t.is_recurring)
+    // Memoize filtered results to avoid recalculation on every render
+    const recurringPayments = useMemo(() => 
+        transactions.filter((t: any) => t.is_recurring), 
+        [transactions]
+    )
 
-    const filteredTransactions = transactions.filter((t: any) =>
-        (selectedCategory === 'All' || t.category === selectedCategory) &&
-        ((t.merchant || t.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (t.category || '').toLowerCase().includes(searchTerm.toLowerCase()))
+    const filteredTransactions = useMemo(() => 
+        transactions.filter((t: any) =>
+            (selectedCategory === 'All' || t.category === selectedCategory) &&
+            ((t.merchant || t.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (t.category || '').toLowerCase().includes(searchTerm.toLowerCase()))
+        ),
+        [transactions, selectedCategory, searchTerm]
     )
 
     return (
@@ -64,32 +117,40 @@ export default function TransactionsPage() {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <motion.div
-                        className="glass-card p-6"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                                <ArrowUpRight className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-green-400 text-sm font-medium">This month</span>
-                        </div>
-                        <p className="text-sm text-slate-400">Total Income</p>
-                        <p className="text-2xl font-bold text-white mt-1">
-                            {formatCurrency(stats?.total_income || 0)}
-                        </p>
-                    </motion.div>
+                    {isInitialLoad && !stats ? (
+                        <>
+                            <StatsSkeleton />
+                            <StatsSkeleton />
+                            <StatsSkeleton />
+                        </>
+                    ) : (
+                        <>
+                            <motion.div
+                                className="glass-card p-6"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                            >
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                                        <ArrowUpRight className="w-6 h-6 text-white" />
+                                    </div>
+                                    <span className="text-green-400 text-sm font-medium">This month</span>
+                                </div>
+                                <p className="text-sm text-slate-400">Total Income</p>
+                                <p className="text-2xl font-bold text-white mt-1">
+                                    {formatCurrency(stats?.total_income || 0)}
+                                </p>
+                            </motion.div>
 
-                    <motion.div
-                        className="glass-card p-6"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
+                            <motion.div
+                                className="glass-card p-6"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                            >
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
                                 <ArrowDownRight className="w-6 h-6 text-white" />
                             </div>
                             <span className="text-red-400 text-sm font-medium">This month</span>
@@ -117,6 +178,8 @@ export default function TransactionsPage() {
                             {formatCurrency(stats?.net || 0)}
                         </p>
                     </motion.div>
+                        </>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -152,6 +215,9 @@ export default function TransactionsPage() {
 
                         {/* List */}
                         <div className="glass-card overflow-hidden">
+                            {isLoading && isInitialLoad ? (
+                                <TransactionSkeleton />
+                            ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left">
                                     <thead>
@@ -163,13 +229,7 @@ export default function TransactionsPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-700">
-                                        {isLoading ? (
-                                            <tr>
-                                                <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
-                                                    Loading transactions...
-                                                </td>
-                                            </tr>
-                                        ) : filteredTransactions.length > 0 ? (
+                                        {filteredTransactions.length > 0 ? (
                                             filteredTransactions.map((t: any) => (
                                                 <tr key={t.id} className="hover:bg-slate-800/30 transition-colors">
                                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -207,6 +267,7 @@ export default function TransactionsPage() {
                                     </tbody>
                                 </table>
                             </div>
+                            )}
                         </div>
                     </div>
 
@@ -224,26 +285,31 @@ export default function TransactionsPage() {
                             </div>
 
                             <div className="space-y-4">
-                                {recurringPayments.map((payment) => (
+                                {recurringPayments.length > 0 ? recurringPayments.map((payment: any) => (
                                     <div key={payment.id} className="p-4 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-primary-500/50 transition-colors group">
                                         <div className="flex justify-between items-start mb-2">
                                             <div className="flex items-center space-x-3">
-                                                <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center group-hover:bg-primary-500/20 transition-colors">
-                                                    <payment.icon className="w-4 h-4 text-slate-300 group-hover:text-primary-400" />
+                                                <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center group-hover:bg-primary-500/20 transition-colors text-lg">
+                                                    {getCategoryIcon(payment.category)}
                                                 </div>
                                                 <div>
-                                                    <p className="font-medium text-white text-sm">{payment.name}</p>
-                                                    <p className="text-xs text-slate-500">{payment.frequency}</p>
+                                                    <p className="font-medium text-white text-sm">{payment.merchant || payment.description || 'Recurring'}</p>
+                                                    <p className="text-xs text-slate-500">{payment.category || 'Monthly'}</p>
                                                 </div>
                                             </div>
                                             <span className="font-bold text-white text-sm">{formatCurrency(payment.amount)}</span>
                                         </div>
                                         <div className="flex justify-between items-center text-xs w-full mt-2 pt-2 border-t border-slate-700/50">
                                             <span className="text-slate-500">Next Due:</span>
-                                            <span className="text-primary-300 bg-primary-500/10 px-2 py-0.5 rounded">{formatDate(payment.nextDate)}</span>
+                                            <span className="text-primary-300 bg-primary-500/10 px-2 py-0.5 rounded">{formatDate(payment.transaction_date || payment.date)}</span>
                                         </div>
                                     </div>
-                                ))}
+                                )) : (
+                                    <div className="text-center py-6 text-slate-500">
+                                        <RefreshCcw className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                        <p className="text-sm">No recurring payments detected</p>
+                                    </div>
+                                )}
                             </div>
 
                             <button className="w-full mt-6 btn-secondary text-xs py-2">
