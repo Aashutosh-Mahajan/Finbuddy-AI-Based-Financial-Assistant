@@ -1,0 +1,275 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import {
+    TrendingUp,
+    Shield,
+    Zap,
+    PieChart,
+    BarChart,
+    Target,
+    ArrowRight,
+    Info,
+    ExternalLink,
+    ChevronDown,
+    LineChart,
+    Loader2,
+} from 'lucide-react'
+import { DashboardLayout } from '@/components/layouts/DashboardLayout'
+import { formatCurrency, formatPercentage } from '@/lib/utils'
+import { useAppDispatch, useAppSelector, RootState } from '@/store/hooks'
+import { fetchInvestments, fetchAgentInsights } from '@/store/slices/investmentsSlice'
+
+export default function InvestmentsPage() {
+    const dispatch = useAppDispatch()
+    const { portfolio, agentInsights, isLoadingInsights } = useAppSelector((state: any) => state.investments)
+    const [activeTab, setActiveTab] = useState<'growth' | 'safety'>('growth')
+
+    // Fetch AI insights on mount
+    useEffect(() => {
+        dispatch(fetchAgentInsights(undefined))
+    }, [dispatch])
+
+    const handleRegenerate = () => {
+        dispatch(fetchAgentInsights(undefined))
+    }
+
+    // Extract data from agent insights or use defaults
+    const analysisdata = agentInsights?.analysis ? {
+        monthlySurplus: agentInsights.analysis.monthly_surplus || 15000,
+        riskScore: agentInsights.analysis.risk_score || 65,
+        riskProfile: agentInsights.analysis.risk_profile || 'Moderate Growth',
+        marketSentiment: agentInsights.analysis.market_sentiment || 'Neutral',
+        topTrends: agentInsights.analysis.top_trends || ['Market Analysis', 'Portfolio Review', 'Risk Assessment'],
+    } : {
+        monthlySurplus: 0,
+        riskScore: 50,
+        riskProfile: 'Loading...',
+        marketSentiment: 'Analyzing...',
+        topTrends: ['Please wait...'],
+    }
+
+    const growthRecommendations = agentInsights?.growth_recommendations?.recommendations || []
+
+    const safetyRecommendations = agentInsights?.safety_recommendations?.recommendations || []
+
+    return (
+        <DashboardLayout>
+            <div className="space-y-8">
+
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-white">Investment Advisory</h1>
+                        <p className="text-slate-400">AI-driven insights tailored to your spending & market trends.</p>
+                    </div>
+                    <button
+                        onClick={handleRegenerate}
+                        disabled={isLoadingInsights}
+                        className="btn-primary flex items-center space-x-2 disabled:opacity-50"
+                    >
+                        {isLoadingInsights ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <Zap className="w-4 h-4" />
+                        )}
+                        <span>{isLoadingInsights ? 'Generating...' : 'Regenerate Plan'}</span>
+                    </button>
+                </div>
+
+                {/* Analysis Overview Card */}
+                <div className="glass-card p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/50">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center md:text-left">
+                        <div className="space-y-1">
+                            <p className="text-xs text-slate-400 uppercase tracking-wider">Investable Surplus</p>
+                            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500">
+                                {formatCurrency(analysisdata.monthlySurplus)}
+                            </h2>
+                            <p className="text-xs text-slate-500">Available monthly from income</p>
+                        </div>
+
+                        <div className="space-y-1">
+                            <p className="text-xs text-slate-400 uppercase tracking-wider">Risk Profile</p>
+                            <div className="flex items-center justify-center md:justify-start space-x-2">
+                                <span className="text-xl font-semibold text-white">{analysisdata.riskProfile}</span>
+                                <span className={`px-2 py-0.5 rounded text-xs font-bold ${analysisdata.riskScore > 60 ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'
+                                    }`}>
+                                    {analysisdata.riskScore}/100
+                                </span>
+                            </div>
+                            <div className="w-full bg-slate-700 h-1.5 rounded-full mt-2">
+                                <div
+                                    className="bg-gradient-to-r from-blue-500 to-orange-500 h-1.5 rounded-full"
+                                    style={{ width: `${analysisdata.riskScore}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1">
+                            <p className="text-xs text-slate-400 uppercase tracking-wider">Market Sentiment</p>
+                            <div className="flex items-center justify-center md:justify-start space-x-2">
+                                <TrendingUp className="w-5 h-5 text-green-400" />
+                                <span className="text-xl font-semibold text-green-400">{analysisdata.marketSentiment}</span>
+                            </div>
+                            <p className="text-xs text-slate-500">Based on recent news analysis</p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <p className="text-xs text-slate-400 uppercase tracking-wider">Top Trends</p>
+                            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                                {analysisdata.topTrends.map((trend) => (
+                                    <span key={trend} className="px-2 py-1 bg-slate-700/50 border border-slate-600 rounded text-xs text-slate-300">
+                                        {trend}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Split View: Growth vs Safety */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                    {/* Left Column: Growth Generators */}
+                    <section className="space-y-4">
+                        <div className="flex items-center space-x-2 mb-2">
+                            <div className="p-2 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg">
+                                <LineChart className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-white">Growth Generators</h2>
+                                <p className="text-xs text-slate-400">High-potential equity & mutual funds</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            {isLoadingInsights ? (
+                                <div className="glass-card p-8 flex flex-col items-center justify-center">
+                                    <Loader2 className="w-8 h-8 animate-spin text-purple-400 mb-2" />
+                                    <p className="text-slate-400 text-sm">Analyzing your portfolio...</p>
+                                </div>
+                            ) : growthRecommendations.length === 0 ? (
+                                <div className="glass-card p-8 flex flex-col items-center justify-center">
+                                    <TrendingUp className="w-12 h-12 text-slate-600 mb-2" />
+                                    <p className="text-slate-400 text-sm">No recommendations yet. Add transactions to get personalized advice.</p>
+                                </div>
+                            ) : (
+                                growthRecommendations.map((item: any, idx: number) => (
+                                    <motion.div
+                                        key={idx}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.1 }}
+                                        className="glass-card p-4 hover:border-purple-500/50 transition-all cursor-pointer group"
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <div className="flex items-center space-x-2">
+                                                    <span className={`text-xs px-2 py-0.5 rounded border ${item.type === 'Stock' ? 'border-blue-500 text-blue-400 bg-blue-500/10' :
+                                                        item.type === 'Mutual Fund' ? 'border-purple-500 text-purple-400 bg-purple-500/10' :
+                                                            'border-slate-500 text-slate-400 bg-slate-500/10'
+                                                        }`}>{item.type}</span>
+                                                    <h3 className="font-semibold text-white group-hover:text-purple-400 transition-colors">{item.name}</h3>
+                                                </div>
+                                                <p className="text-sm text-slate-400 mt-1 line-clamp-2">{item.rationale}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-lg font-bold text-green-400">+{item.return || item.expected_return}%</p>
+                                                <p className="text-xs text-slate-500">Exp. CAGR</p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-3 flex items-center justify-between text-xs border-t border-slate-700/50 pt-2">
+                                            <span className="text-slate-400">Allocation: <span className="text-white font-medium">{item.allocation}%</span> ({formatCurrency(analysisdata.monthlySurplus * item.allocation / 100)})</span>
+                                            <span className="flex items-center text-purple-400 hover:text-purple-300">
+                                                Details <ArrowRight className="w-3 h-3 ml-1" />
+                                            </span>
+                                        </div>
+                                    </motion.div>
+                                ))
+                            )}
+                        </div>
+                    </section>
+
+                    {/* Right Column: Safety Net */}
+                    <section className="space-y-4">
+                        <div className="flex items-center space-x-2 mb-2">
+                            <div className="p-2 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg">
+                                <Shield className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-white">Safety Net</h2>
+                                <p className="text-xs text-slate-400">Stable returns with FDs, RDs & PSUs</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            {isLoadingInsights ? (
+                                <div className="glass-card p-8 flex flex-col items-center justify-center">
+                                    <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mb-2" />
+                                    <p className="text-slate-400 text-sm">Loading safety options...</p>
+                                </div>
+                            ) : safetyRecommendations.length === 0 ? (
+                                <div className="glass-card p-8 flex flex-col items-center justify-center">
+                                    <Shield className="w-12 h-12 text-slate-600 mb-2" />
+                                    <p className="text-slate-400 text-sm">No recommendations yet. Add transactions to get personalized advice.</p>
+                                </div>
+                            ) : (
+                                safetyRecommendations.map((item: any, idx: number) => (
+                                    <motion.div
+                                        key={idx}
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.1 }}
+                                        className="glass-card p-4 hover:border-emerald-500/50 transition-all cursor-pointer group"
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <div className="flex items-center space-x-2">
+                                                    <span className={`text-xs px-2 py-0.5 rounded border ${item.type === 'FD' ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10' :
+                                                        item.type === 'Gov Scheme' ? 'border-orange-500 text-orange-400 bg-orange-500/10' :
+                                                            'border-teal-500 text-teal-400 bg-teal-500/10'
+                                                        }`}>{item.type}</span>
+                                                    <h3 className="font-semibold text-white group-hover:text-emerald-400 transition-colors">{item.name}</h3>
+                                                </div>
+                                                <div className="flex items-center space-x-4 mt-2">
+                                                    <div className="text-xs">
+                                                        <span className="text-slate-500 block">Duration</span>
+                                                        <span className="text-slate-300">{item.duration}</span>
+                                                    </div>
+                                                    <div className="text-xs">
+                                                        <span className="text-slate-500 block">Safety</span>
+                                                        <span className="text-green-400">{item.safety}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-lg font-bold text-emerald-400">{item.rate || item.interest_rate}%</p>
+                                                <p className="text-xs text-slate-500">Interest</p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-3 flex items-center justify-between text-xs border-t border-slate-700/50 pt-2">
+                                            <span className="text-slate-400">Maturity: <span className="text-white font-medium">{typeof item.maturityVal === 'number' || typeof item.maturity_value === 'number' ? formatCurrency(item.maturityVal || item.maturity_value) : (item.maturityVal || item.maturity_value || 'Variable')}</span></span>
+                                            <span className="flex items-center text-emerald-400 hover:text-emerald-300">
+                                                View Plan <ArrowRight className="w-3 h-3 ml-1" />
+                                            </span>
+                                        </div>
+                                    </motion.div>
+                                ))
+                            )}
+                        </div>
+                    </section>
+
+                </div>
+
+                {/* Disclaimer */}
+                <div className="text-center p-4">
+                    <p className="text-xs text-slate-600">
+                        Disclaimer: These recommendations are generated by AI based on your financial data and market trends.
+                        Investments are subject to market risks. Please consult a certified financial advisor before making any decisions.
+                    </p>
+                </div>
+            </div>
+        </DashboardLayout>
+    )
+}
