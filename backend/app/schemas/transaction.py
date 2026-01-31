@@ -4,7 +4,7 @@ Transaction Pydantic schemas
 
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.models.transaction import TransactionType, TransactionCategory, TransactionSource
 
@@ -16,6 +16,17 @@ class TransactionBase(BaseModel):
     description: Optional[str] = None
     merchant_name: Optional[str] = None
     transaction_date: datetime
+    
+    @field_validator('transaction_date', mode='before')
+    @classmethod
+    def ensure_naive_datetime(cls, v):
+        """Ensure datetime is timezone-naive for PostgreSQL compatibility."""
+        if v is None:
+            return v
+        if isinstance(v, datetime) and v.tzinfo is not None:
+            # Convert to UTC and remove timezone info
+            return v.replace(tzinfo=None)
+        return v
 
 
 class TransactionCreate(TransactionBase):

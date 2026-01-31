@@ -49,9 +49,9 @@ class AgentState(Base):
     tool_calls: Mapped[Optional[list]] = mapped_column(JSON, default=list)
     
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=False),
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
@@ -90,11 +90,11 @@ class AgentTask(Base):
     error_message: Mapped[Optional[str]] = mapped_column(Text)
     
     # Execution Time
-    started_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
-    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    started_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False))
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False))
     
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), default=datetime.utcnow)
     
     def __repr__(self) -> str:
         return f"<AgentTask(id={self.id}, type={self.task_type}, status={self.status})>"

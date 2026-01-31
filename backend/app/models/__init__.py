@@ -23,6 +23,7 @@ from app.models.conversation import (
     Message,
     MessageRole
 )
+from app.models.notification import Notification
 
 __all__ = [
     # User
@@ -42,6 +43,8 @@ __all__ = [
     # Agent
     "AgentState",
     "AgentTask",
+    # Notification
+    "Notification",
     # Conversation
     "Conversation",
     "Message",

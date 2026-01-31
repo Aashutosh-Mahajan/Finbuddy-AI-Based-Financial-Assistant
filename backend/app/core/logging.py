@@ -81,6 +81,7 @@ def setup_logging() -> None:
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("passlib.handlers.bcrypt").setLevel(logging.ERROR)
 
 
 def get_logger(name: str = __name__) -> structlog.stdlib.BoundLogger:

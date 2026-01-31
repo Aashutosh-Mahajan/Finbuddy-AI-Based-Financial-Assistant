@@ -7,8 +7,42 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime
 import json
 
+
+def _patch_langgraph_prebuilt_exports() -> None:
+    """Ensure `langgraph.prebuilt` exports symbols LangChain expects.
+
+    Newer LangGraph versions expose these from `langgraph.prebuilt.tool_node` but
+    may not re-export them from the namespace package root.
+    """
+
+    try:
+        import langgraph.prebuilt as prebuilt
+        from langgraph.prebuilt import tool_node
+
+        for name in ("InjectedState", "InjectedStore", "ToolRuntime"):
+            if not hasattr(prebuilt, name) and hasattr(tool_node, name):
+                setattr(prebuilt, name, getattr(tool_node, name))
+    except Exception:
+        # Best-effort shim only; never block app startup.
+        return
+
+
+_patch_langgraph_prebuilt_exports()
+
 from langchain_openai import ChatOpenAI
-from langchain.agents import AgentExecutor, create_openai_tools_agent
+
+try:
+    from langchain.agents import AgentExecutor, create_openai_tools_agent
+except Exception:  # pragma: no cover
+    try:
+        from langchain.agents.agent import AgentExecutor
+        from langchain.agents.openai_tools.base import create_openai_tools_agent
+    except Exception as e:  # pragma: no cover
+        raise ImportError(
+            "LangChain agent helpers are unavailable. "
+            "This project expects `AgentExecutor` and `create_openai_tools_agent`. "
+            "Install a compatible LangChain version (e.g. `langchain<1.0.0`)."
+        ) from e
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder

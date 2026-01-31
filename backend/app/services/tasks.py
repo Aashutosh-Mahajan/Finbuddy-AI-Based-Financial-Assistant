@@ -254,3 +254,105 @@ def daily_market_summary() -> Dict[str, Any]:
         return {"success": False, "error": str(e)}
     finally:
         loop.close()
+
+
+@celery_app.task(name="nightly_cash_check")
+def nightly_cash_check() -> Dict[str, Any]:
+    """
+    Nightly cash reconciliation check (scheduled for 11 PM IST / 23:00 Asia/Kolkata).
+    
+    Creates nudge notifications for users with significant untracked cash.
+    """
+    from app.core.database import async_session_maker
+    from app.models.user import User
+    from app.models.notification import Notification
+    from app.services.cash_reconciliation_service import cash_reconciliation_service
+    from sqlalchemy import select
+    
+    logger.info("Starting nightly cash check for all active users")
+    
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    
+    try:
+        async def _run_check():
+            notifications_created = 0
+            
+            async with async_session_maker() as db:
+                # Get all active users
+                result = await db.execute(
+                    select(User).where(User.is_active == True)
+                )
+                users = result.scalars().all()
+                
+                for user in users:
+                    try:
+                        # Compute cash position
+                        position = await cash_reconciliation_service.compute_cash_position(
+                            db=db,
+                            user_id=user.id,
+                            lookback_days=30,
+                            min_days_since_withdrawal=3,
+                        )
+                        
+                        # Create nudge notification if eligible
+                        if position["eligible_for_nudge"] and position["estimated_untracked_cash"] >= 1000:
+                            # Generate suggestions
+                            suggestions = await cash_reconciliation_service.suggest_likely_cash_expenses(
+                                db=db,
+                                user_id=user.id,
+                                history_days=90,
+                                limit=4,
+                            )
+                            
+                            notification = Notification(
+                                user_id=user.id,
+                                type="cash_check",
+                                title="💰 Cash Check-In",
+                                message=(
+                                    f"You have ₹{position['estimated_untracked_cash']:,.0f} in untracked cash. "
+                                    f"Tracked so far: ₹{position['tracked_cash_spend']:,.0f}. "
+                                    "Quick add expenses?"
+                                ),
+                                payload={
+                                    "cash_position": position,
+                                    "suggestions": [
+                                        {
+                                            "label": s.label,
+                                            "subcategory": s.subcategory,
+                                            "typical_amount": s.typical_amount,
+                                            "amount_range": [s.amount_range[0], s.amount_range[1]],
+                                            "probability": float(s.probability),
+                                        }
+                                        for s in suggestions
+                                    ],
+                                },
+                            )
+                            
+                            db.add(notification)
+                            notifications_created += 1
+                    
+                    except Exception as e:
+                        logger.error(f"Cash check failed for user {user.id}", error=str(e))
+                        continue
+                
+                await db.commit()
+            
+            return notifications_created
+        
+        count = loop.run_until_complete(_run_check())
+        
+        logger.info(f"Nightly cash check completed: {count} notifications created")
+        
+        return {
+            "success": True,
+            "notifications_created": count,
+            "checked_at": datetime.utcnow().isoformat()
+        }
+    
+    except Exception as e:
+        logger.error("Nightly cash check failed", error=str(e))
+        return {"success": False, "error": str(e)}
+    
+    finally:
+        loop.close()

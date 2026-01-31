@@ -55,15 +55,15 @@ class User(Base):
     
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=False),
         default=datetime.utcnow
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=False),
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
-    last_login: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    last_login: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False))
     
     # Relationships
     transactions: Mapped[List["Transaction"]] = relationship(

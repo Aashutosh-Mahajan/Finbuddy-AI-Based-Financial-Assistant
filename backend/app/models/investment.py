@@ -83,7 +83,7 @@ class Investment(Base):
     sip_date: Mapped[Optional[int]] = mapped_column(Integer)  # Day of month
     
     # Maturity Details
-    maturity_date: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    maturity_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False))
     interest_rate: Mapped[Optional[float]] = mapped_column(Float)
     
     # Status
@@ -97,10 +97,10 @@ class Investment(Base):
     extra_data: Mapped[Optional[dict]] = mapped_column(JSON, default=dict)
     
     # Timestamps
-    purchase_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    purchase_date: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=False),
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
@@ -142,8 +142,8 @@ class InvestmentHolding(Base):
     holding_type: Mapped[str] = mapped_column(String(20))  # buy, sell, dividend
     
     # Timestamp
-    transaction_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    transaction_date: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), default=datetime.utcnow)
     
     # Relationships
     investment: Mapped["Investment"] = relationship("Investment", back_populates="holdings")
@@ -181,7 +181,7 @@ class Watchlist(Base):
     notes: Mapped[Optional[str]] = mapped_column(Text)
     
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), default=datetime.utcnow)
     
     def __repr__(self) -> str:
         return f"<Watchlist(id={self.id}, symbol={self.symbol})>"

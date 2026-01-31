@@ -4,7 +4,7 @@ Investment Pydantic schemas
 
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.models.investment import InvestmentType, InvestmentStatus
 
@@ -16,6 +16,16 @@ class InvestmentBase(BaseModel):
     investment_type: InvestmentType
     invested_amount: float = Field(..., gt=0)
     purchase_date: datetime
+    
+    @field_validator('purchase_date', mode='before')
+    @classmethod
+    def ensure_naive_datetime(cls, v):
+        """Ensure datetime is timezone-naive for PostgreSQL compatibility."""
+        if v is None:
+            return v
+        if isinstance(v, datetime) and v.tzinfo is not None:
+            return v.replace(tzinfo=None)
+        return v
 
 
 class InvestmentCreate(InvestmentBase):
@@ -29,6 +39,16 @@ class InvestmentCreate(InvestmentBase):
     maturity_date: Optional[datetime] = None
     interest_rate: Optional[float] = None
     notes: Optional[str] = None
+    
+    @field_validator('maturity_date', mode='before')
+    @classmethod
+    def ensure_naive_maturity(cls, v):
+        """Ensure datetime is timezone-naive for PostgreSQL compatibility."""
+        if v is None:
+            return v
+        if isinstance(v, datetime) and v.tzinfo is not None:
+            return v.replace(tzinfo=None)
+        return v
 
 
 class InvestmentUpdate(BaseModel):
@@ -85,6 +105,16 @@ class InvestmentHoldingCreate(BaseModel):
     price: float
     holding_type: str  # buy, sell, dividend
     transaction_date: datetime
+    
+    @field_validator('transaction_date', mode='before')
+    @classmethod
+    def ensure_naive_datetime(cls, v):
+        """Ensure datetime is timezone-naive for PostgreSQL compatibility."""
+        if v is None:
+            return v
+        if isinstance(v, datetime) and v.tzinfo is not None:
+            return v.replace(tzinfo=None)
+        return v
 
 
 class InvestmentHoldingResponse(BaseModel):

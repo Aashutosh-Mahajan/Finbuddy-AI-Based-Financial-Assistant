@@ -99,10 +99,10 @@ class Transaction(Base):
     is_duplicate: Mapped[bool] = mapped_column(default=False)
     
     # Timestamps
-    transaction_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    transaction_date: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=False),
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
@@ -143,16 +143,16 @@ class RecurringTransaction(Base):
     is_investment: Mapped[bool] = mapped_column(default=False)
     
     # Schedule
-    next_expected_date: Mapped[Optional[datetime]] = mapped_column(DateTime)
-    last_transaction_date: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    next_expected_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False))
+    last_transaction_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False))
     
     # Status
     is_active: Mapped[bool] = mapped_column(default=True)
     
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=False),
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )

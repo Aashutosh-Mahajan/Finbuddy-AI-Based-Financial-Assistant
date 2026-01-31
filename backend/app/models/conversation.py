@@ -51,9 +51,9 @@ class Conversation(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=False),
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
@@ -110,7 +110,7 @@ class Message(Base):
     completion_tokens: Mapped[Optional[int]] = mapped_column()
     
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), default=datetime.utcnow)
     
     # Relationships
     conversation: Mapped["Conversation"] = relationship("Conversation", back_populates="messages")

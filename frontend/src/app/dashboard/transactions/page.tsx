@@ -16,11 +16,15 @@ import {
     Coffee,
     Zap,
     Loader2,
+    Banknote,
+    TrendingDown,
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/layouts/DashboardLayout'
 import { formatCurrency, formatDate, getCategoryColor, getCategoryIcon } from '@/lib/utils'
 import { useAppDispatch, useAppSelector, RootState } from '@/store/hooks'
 import { fetchTransactions, fetchTransactionStats } from '@/store/slices/transactionsSlice'
+import { AddTransactionModal } from '@/components/common/AddTransactionModal'
+import { UntrackedCashWidget } from '@/components/common/UntrackedCashWidget'
 
 // Loading skeleton component for fast perceived loading
 function TransactionSkeleton() {
@@ -60,13 +64,38 @@ export default function TransactionsPage() {
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedCategory, setSelectedCategory] = useState('All')
     const [isInitialLoad, setIsInitialLoad] = useState(true)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [widgetKey, setWidgetKey] = useState(0)
+    const [cashData, setCashData] = useState<any>(null)
+    const [isCashLoading, setIsCashLoading] = useState(true)
+
+    // Fetch cash check data
+    const fetchCashData = async () => {
+        try {
+            const token = localStorage.getItem('token')
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cash-check/summary`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+            if (response.ok) {
+                const data = await response.json()
+                setCashData(data)
+            }
+        } catch (error) {
+            console.error('Error fetching cash data:', error)
+        } finally {
+            setIsCashLoading(false)
+        }
+    }
 
     useEffect(() => {
         // Fetch both in parallel for faster loading
         const loadData = async () => {
             await Promise.all([
                 dispatch(fetchTransactions({})),
-                dispatch(fetchTransactionStats('month'))
+                dispatch(fetchTransactionStats('month')),
+                fetchCashData()
             ])
             setIsInitialLoad(false)
         }
@@ -76,6 +105,7 @@ export default function TransactionsPage() {
             loadData()
         } else {
             setIsInitialLoad(false)
+            if (!cashData) fetchCashData()
         }
     }, [dispatch])
 
@@ -87,9 +117,10 @@ export default function TransactionsPage() {
 
     const filteredTransactions = useMemo(() => 
         transactions.filter((t: any) =>
-            (selectedCategory === 'All' || t.category === selectedCategory) &&
-            ((t.merchant || t.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (t.category || '').toLowerCase().includes(searchTerm.toLowerCase()))
+            (selectedCategory === 'All' || (t.category || '').toLowerCase() === selectedCategory.toLowerCase()) &&
+            ((t.merchant_name || t.merchant || t.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (t.category || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (t.subcategory || '').toLowerCase().includes(searchTerm.toLowerCase()))
         ),
         [transactions, selectedCategory, searchTerm]
     )
@@ -108,7 +139,10 @@ export default function TransactionsPage() {
                             <Download className="w-4 h-4" />
                             <span>Export</span>
                         </button>
-                        <button className="btn-primary flex items-center space-x-2">
+                        <button 
+                            onClick={() => setIsModalOpen(true)}
+                            className="btn-primary flex items-center space-x-2"
+                        >
                             <Wallet className="w-4 h-4" />
                             <span>Add New</span>
                         </button>
@@ -171,16 +205,151 @@ export default function TransactionsPage() {
                             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                                 <Wallet className="w-6 h-6 text-white" />
                             </div>
-                            <span className="text-blue-400 text-sm font-medium">{stats?.net >= 0 ? 'Healthy' : 'Review'}</span>
+                            <span className={`text-sm font-medium ${
+                                (stats?.net_savings || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+                            }`}>
+                                {(stats?.net_savings || 0) >= 0 ? 'Healthy' : 'Review'}
+                            </span>
                         </div>
                         <p className="text-sm text-slate-400">Net Savings</p>
-                        <p className="text-2xl font-bold text-white mt-1">
-                            {formatCurrency(stats?.net || 0)}
+                        <p className={`text-2xl font-bold mt-1 ${
+                            (stats?.net_savings || 0) >= 0 ? 'text-white' : 'text-red-400'
+                        }`}>
+                            {formatCurrency(stats?.net_savings || 0)}
                         </p>
                     </motion.div>
                         </>
                     )}
                 </div>
+
+                {/* Untracked Cash Summary Section */}
+                {isCashLoading ? (
+                    <div className="glass-card p-6 animate-pulse">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-14 h-14 rounded-2xl bg-slate-700" />
+                                <div>
+                                    <div className="h-6 bg-slate-700 rounded w-40 mb-2" />
+                                    <div className="h-4 bg-slate-700/50 rounded w-48" />
+                                </div>
+                            </div>
+                            <div className="h-8 bg-slate-700 rounded w-32" />
+                        </div>
+                    </div>
+                ) : cashData && cashData.estimated_untracked_cash >= 0 ? (
+                    <motion.div
+                        className="glass-card p-6 bg-gradient-to-br from-amber-900/30 to-orange-900/30 border-2 border-amber-500/30"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                    >
+                        <div className="flex items-start justify-between mb-6">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
+                                    <Banknote className="w-7 h-7 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white mb-1">Untracked Cash</h3>
+                                    <p className="text-sm text-amber-400">
+                                        {cashData.days_since_withdrawal !== null 
+                                            ? `${cashData.days_since_withdrawal} days since last ATM withdrawal`
+                                            : 'Cash reconciliation status'
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-3xl font-bold text-amber-400">
+                                    {formatCurrency(cashData.estimated_untracked_cash)}
+                                </p>
+                                <p className="text-xs text-slate-400 mt-1">Estimated unaccounted</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                <div className="flex items-center justify-between mb-2">
+                                    <p className="text-xs text-slate-400 font-medium">Total Withdrawn</p>
+                                    <ArrowUpRight className="w-4 h-4 text-green-400" />
+                                </div>
+                                <p className="text-xl font-bold text-white">{formatCurrency(cashData.total_withdrawn)}</p>
+                            </div>
+                            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                <div className="flex items-center justify-between mb-2">
+                                    <p className="text-xs text-slate-400 font-medium">Tracked Spending</p>
+                                    <TrendingDown className="w-4 h-4 text-blue-400" />
+                                </div>
+                                <p className="text-xl font-bold text-white">{formatCurrency(cashData.tracked_cash_spend)}</p>
+                            </div>
+                            <div className="bg-amber-500/10 rounded-lg p-4 border border-amber-500/30">
+                                <div className="flex items-center justify-between mb-2">
+                                    <p className="text-xs text-amber-400 font-medium">Untracked Amount</p>
+                                    <Wallet className="w-4 h-4 text-amber-400" />
+                                </div>
+                                <p className="text-xl font-bold text-amber-400">{formatCurrency(cashData.estimated_untracked_cash)}</p>
+                            </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="mb-4">
+                            <div className="flex justify-between text-xs text-slate-400 mb-2">
+                                <span>Cash Flow Tracking</span>
+                                <span>{Math.round((cashData.tracked_cash_spend / cashData.total_withdrawn) * 100)}% tracked</span>
+                            </div>
+                            <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                <div 
+                                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500"
+                                    style={{ width: `${Math.min((cashData.tracked_cash_spend / cashData.total_withdrawn) * 100, 100)}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
+                            <p className="text-sm text-slate-400">
+                                💡 Add missing cash expenses to improve tracking accuracy
+                            </p>
+                            <button 
+                                onClick={() => setIsModalOpen(true)}
+                                className="btn-primary text-sm py-2 px-4"
+                            >
+                                Track Cash Expense
+                            </button>
+                        </div>
+                    </motion.div>
+                ) : cashData && cashData.estimated_untracked_cash === 0 ? (
+                    <motion.div
+                        className="glass-card p-6 bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-2 border-green-500/30"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                                    <Wallet className="w-6 h-6 text-green-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-white">All Cash Tracked! 🎉</h3>
+                                    <p className="text-sm text-slate-400">You've accounted for all your cash withdrawals</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-bold text-green-400">{formatCurrency(0)}</p>
+                                <p className="text-xs text-slate-400">Untracked</p>
+                            </div>
+                        </div>
+                    </motion.div>
+                ) : null}
+
+                {/* Untracked Cash Widget */}
+                <UntrackedCashWidget 
+                    key={widgetKey}
+                    onTransactionAdded={() => {
+                        dispatch(fetchTransactions({}))
+                        dispatch(fetchTransactionStats('month'))
+                        fetchCashData() // Refresh cash data
+                    }}
+                />
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Transaction List */}
@@ -198,7 +367,7 @@ export default function TransactionsPage() {
                                 />
                             </div>
                             <div className="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto">
-                                {['All', 'Food', 'Shopping', 'Bills', 'Transport'].map((cat) => (
+                                {['All', 'Essentials', 'Needs', 'Spends', 'Bills', 'Savings', 'Income', 'Other'].map((cat) => (
                                     <button
                                         key={cat}
                                         onClick={() => setSelectedCategory(cat)}
@@ -333,6 +502,18 @@ export default function TransactionsPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Add Transaction Modal */}
+                <AddTransactionModal 
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSuccess={() => {
+                        dispatch(fetchTransactions({}))
+                        dispatch(fetchTransactionStats('month'))
+                        setWidgetKey(prev => prev + 1) // Force widget refresh
+                        fetchCashData() // Refresh cash data
+                    }}
+                />
             </div>
         </DashboardLayout>
     )

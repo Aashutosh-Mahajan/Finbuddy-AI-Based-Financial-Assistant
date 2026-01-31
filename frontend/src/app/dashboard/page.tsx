@@ -18,6 +18,7 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { fetchDashboardSummary, fetchSpendingTrends, fetchAlerts } from '@/store/slices/dashboardSlice'
 import { fetchTransactions } from '@/store/slices/transactionsSlice'
+import { UntrackedCashWidget } from '@/components/common/UntrackedCashWidget'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 
@@ -38,14 +39,38 @@ export default function DashboardPage() {
 
     const isLoading = dashboardLoading || transactionsLoading
 
-    // Calculate health score dynamically based on savings rate
+    // Calculate health score dynamically based on savings rate and financial metrics
     const savingsRate = summary?.savings_rate || 0
-    const healthScore = Math.min(100, Math.max(0, Math.round(savingsRate * 2 + 40))) // Scale from 40-100
+    
+    // Improved health score calculation:
+    // - Negative savings: 0-30 score (Needs Work)
+    // - 0-10% savings: 30-50 score (Fair)
+    // - 10-20% savings: 50-70 score (Good)
+    // - 20-30% savings: 70-85 score (Very Good)
+    // - 30%+ savings: 85-100 score (Excellent)
+    let healthScore = 0
+    if (savingsRate < 0) {
+        // Negative savings rate: scale from 0-30 based on how negative
+        healthScore = Math.max(0, Math.round(30 + savingsRate)) // -30% = 0, 0% = 30
+    } else if (savingsRate < 10) {
+        // 0-10% savings: scale from 30-50
+        healthScore = Math.round(30 + (savingsRate * 2))
+    } else if (savingsRate < 20) {
+        // 10-20% savings: scale from 50-70
+        healthScore = Math.round(50 + ((savingsRate - 10) * 2))
+    } else if (savingsRate < 30) {
+        // 20-30% savings: scale from 70-85
+        healthScore = Math.round(70 + ((savingsRate - 20) * 1.5))
+    } else {
+        // 30%+ savings: scale from 85-100
+        healthScore = Math.min(100, Math.round(85 + ((savingsRate - 30) * 0.5)))
+    }
 
     const getHealthLabel = (score: number) => {
-        if (score >= 80) return { label: 'Excellent', color: 'text-green-400' }
-        if (score >= 60) return { label: 'Good', color: 'text-green-400' }
-        if (score >= 40) return { label: 'Fair', color: 'text-yellow-400' }
+        if (score >= 85) return { label: 'Excellent', color: 'text-green-400' }
+        if (score >= 70) return { label: 'Very Good', color: 'text-green-400' }
+        if (score >= 50) return { label: 'Good', color: 'text-blue-400' }
+        if (score >= 30) return { label: 'Fair', color: 'text-yellow-400' }
         return { label: 'Needs Work', color: 'text-red-400' }
     }
 
@@ -133,27 +158,41 @@ export default function DashboardPage() {
                         className="md:col-span-1 lg:row-span-2 glass-card p-6 flex flex-col items-center justify-center bg-gradient-to-b from-slate-800 to-slate-900 border-t-4 border-t-primary-500"
                     >
                         <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">Financial Score</h3>
-                        <div className="relative w-40 h-40 flex items-center justify-center">
-                            <svg className="w-full h-full transform -rotate-90">
-                                <circle cx="80" cy="80" r="70" stroke="#1e293b" strokeWidth="10" fill="transparent" />
-                                <circle
-                                    cx="80" cy="80" r="70" stroke="#8b5cf6" strokeWidth="10"
-                                    fill="transparent"
-                                    strokeDasharray="440"
-                                    strokeDashoffset={440 - (440 * healthScore) / 100}
-                                    className="transition-all duration-1000 ease-out"
-                                />
-                            </svg>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="text-4xl font-bold text-white">{healthScore}</span>
-                                <span className={`text-xs font-medium pt-1 ${healthInfo.color}`}>{healthInfo.label}</span>
+                        {isLoading && !summary ? (
+                            <div className="relative w-40 h-40 flex items-center justify-center">
+                                <Loader2 className="w-12 h-12 text-primary-500 animate-spin" />
                             </div>
-                        </div>
-                        <p className="text-xs text-center text-slate-500 mt-6 px-4">
-                            {summary?.savings_rate
-                                ? `Savings rate: ${summary.savings_rate.toFixed(1)}%`
-                                : 'Add transactions to calculate your score'}
-                        </p>
+                        ) : (
+                            <>
+                                <div className="relative w-40 h-40 flex items-center justify-center">
+                                    <svg className="w-full h-full transform -rotate-90">
+                                        <circle cx="80" cy="80" r="70" stroke="#1e293b" strokeWidth="10" fill="transparent" />
+                                        <circle
+                                            cx="80" cy="80" r="70" 
+                                            stroke={healthScore >= 70 ? '#22c55e' : healthScore >= 50 ? '#3b82f6' : healthScore >= 30 ? '#eab308' : '#ef4444'}
+                                            strokeWidth="10"
+                                            fill="transparent"
+                                            strokeDasharray="440"
+                                            strokeDashoffset={440 - (440 * healthScore) / 100}
+                                            className="transition-all duration-1000 ease-out"
+                                        />
+                                    </svg>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span className="text-4xl font-bold text-white">{healthScore}</span>
+                                        <span className={`text-xs font-medium pt-1 ${healthInfo.color}`}>{healthInfo.label}</span>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-center text-slate-500 mt-6 px-4">
+                                    {summary ? (
+                                        savingsRate >= 0 
+                                            ? `Savings rate: +${savingsRate.toFixed(1)}%`
+                                            : `Savings rate: ${savingsRate.toFixed(1)}%`
+                                    ) : (
+                                        'Add transactions to calculate your score'
+                                    )}
+                                </p>
+                            </>
+                        )}
                     </motion.div>
 
                     {/* Income vs Expenses Chart */}
@@ -252,6 +291,16 @@ export default function DashboardPage() {
                                 </div>
                             )}
                         </div>
+                    </motion.div>
+
+                    {/* Untracked Cash Widget */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.55 }}
+                        className="md:col-span-1 lg:col-span-2"
+                    >
+                        <UntrackedCashWidget />
                     </motion.div>
 
                     {/* Smart Alerts */}
