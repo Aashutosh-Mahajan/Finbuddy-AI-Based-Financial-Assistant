@@ -87,8 +87,8 @@ export default function InvestmentsPage() {
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-white">Investment Advisory</h1>
-                        <p className="text-slate-400">AI-driven insights tailored to your spending & market trends.</p>
+                        <h1 className="text-2xl font-bold text-mono-900">Investment Advisory</h1>
+                        <p className="text-mono-500">AI-driven insights tailored to your spending & market trends.</p>
                     </div>
                     <button
                         onClick={handleRegenerate}
@@ -105,18 +105,18 @@ export default function InvestmentsPage() {
                 </div>
 
                 {/* Analysis Overview Card */}
-                <div className="glass-card p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/50">
+                <div className="onyx-card p-6">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center md:text-left">
                         <div className="space-y-1">
-                            <p className="text-xs text-slate-400 uppercase tracking-wider">Investable Surplus</p>
-                            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500">
+                            <p className="text-xs text-mono-400 uppercase tracking-wider">Investable Surplus</p>
+                            <h2 className="text-3xl font-bold text-green-400">
                                 {formatCurrency(analysisdata.monthlySurplus)}
                             </h2>
-                            <p className="text-xs text-slate-500">Available monthly from income</p>
+                            <p className="text-xs text-mono-500">Available monthly from income</p>
                         </div>
 
                         <div className="space-y-1">
-                            <p className="text-xs text-slate-400 uppercase tracking-wider">Risk Profile</p>
+                            <p className="text-xs text-mono-400 uppercase tracking-wider">Risk Profile</p>
                             <div className="flex items-center justify-center md:justify-start space-x-2">
                                 <span className="text-xl font-semibold text-white">{analysisdata.riskProfile}</span>
                                 <span className={`px-2 py-0.5 rounded text-xs font-bold ${analysisdata.riskScore > 60 ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'
@@ -124,28 +124,28 @@ export default function InvestmentsPage() {
                                     {analysisdata.riskScore}/100
                                 </span>
                             </div>
-                            <div className="w-full bg-slate-700 h-1.5 rounded-full mt-2">
+                            <div className="w-full bg-mono-700 h-1.5 rounded-full mt-2">
                                 <div
-                                    className="bg-gradient-to-r from-blue-500 to-orange-500 h-1.5 rounded-full transition-all duration-500"
+                                    className="bg-gradient-to-r from-green-500 to-orange-500 h-1.5 rounded-full transition-all duration-500"
                                     style={{ width: `${analysisdata.riskScore}%` }}
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1">
-                            <p className="text-xs text-slate-400 uppercase tracking-wider">Market Sentiment</p>
+                            <p className="text-xs text-mono-400 uppercase tracking-wider">Market Sentiment</p>
                             <div className={`flex items-center justify-center md:justify-start space-x-2 ${getSentimentColor(analysisdata.marketSentiment)}`}>
                                 {getSentimentIcon(analysisdata.marketSentiment)}
                                 <span className="text-xl font-semibold">{analysisdata.marketSentiment}</span>
                             </div>
-                            <p className="text-xs text-slate-500">Based on recent news analysis</p>
+                            <p className="text-xs text-mono-500">Based on recent news analysis</p>
                         </div>
 
                         <div className="space-y-2">
-                            <p className="text-xs text-slate-400 uppercase tracking-wider">Top Trends</p>
+                            <p className="text-xs text-mono-400 uppercase tracking-wider">Top Trends</p>
                             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                                 {analysisdata.topTrends.slice(0, 3).map((trend: string) => (
-                                    <span key={trend} className="px-2 py-1 bg-slate-700/50 border border-slate-600 rounded text-xs text-slate-300">
+                                    <span key={trend} className="px-2 py-1 bg-mono-800 border border-mono-700 rounded text-xs text-mono-200">
                                         {trend}
                                     </span>
                                 ))}
@@ -165,11 +165,11 @@ export default function InvestmentsPage() {
                                     <LineChart className="w-5 h-5 text-white" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-white">Growth Generators</h2>
-                                    <p className="text-xs text-slate-400">High-potential equity & mutual funds</p>
+                                    <h2 className="text-xl font-bold text-mono-900">Growth Generators</h2>
+                                    <p className="text-xs text-mono-500">High-potential equity & mutual funds</p>
                                 </div>
                             </div>
-                            <span className="text-xs text-slate-400 bg-slate-700/50 px-2 py-1 rounded">
+                            <span className="text-xs text-mono-500 bg-mono-200 px-2 py-1 rounded">
                                 Top {growthRecommendations.length} picks
                             </span>
                         </div>
@@ -177,13 +177,13 @@ export default function InvestmentsPage() {
                         <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
                             {isLoadingInsights ? (
                                 <div className="glass-card p-8 flex flex-col items-center justify-center">
-                                    <Loader2 className="w-8 h-8 animate-spin text-purple-400 mb-2" />
-                                    <p className="text-slate-400 text-sm">Analyzing your portfolio...</p>
+                                    <Loader2 className="w-8 h-8 animate-spin text-purple-500 mb-2" />
+                                    <p className="text-mono-500 text-sm">Analyzing your portfolio...</p>
                                 </div>
                             ) : growthRecommendations.length === 0 ? (
                                 <div className="glass-card p-8 flex flex-col items-center justify-center">
-                                    <TrendingUp className="w-12 h-12 text-slate-600 mb-2" />
-                                    <p className="text-slate-400 text-sm">No recommendations yet. Add transactions to get personalized advice.</p>
+                                    <TrendingUp className="w-12 h-12 text-mono-400 mb-2" />
+                                    <p className="text-mono-500 text-sm">No recommendations yet. Add transactions to get personalized advice.</p>
                                 </div>
                             ) : (
                                 growthRecommendations.map((item: any, idx: number) => (
@@ -210,31 +210,31 @@ export default function InvestmentsPage() {
                                         <div className="flex justify-between items-start">
                                             <div className="flex-1 pr-12">
                                                 <div className="flex items-center space-x-2 mb-1">
-                                                    <span className={`text-xs px-2 py-0.5 rounded border ${item.type === 'Stock' ? 'border-blue-500 text-blue-400 bg-blue-500/10' :
-                                                        item.type === 'Mutual Fund' ? 'border-purple-500 text-purple-400 bg-purple-500/10' :
-                                                            item.type === 'SIP' ? 'border-green-500 text-green-400 bg-green-500/10' :
-                                                                item.type === 'ETF' ? 'border-cyan-500 text-cyan-400 bg-cyan-500/10' :
-                                                                    'border-slate-500 text-slate-400 bg-slate-500/10'
+                                                    <span className={`text-xs px-2 py-0.5 rounded border ${item.type === 'Stock' ? 'border-blue-500 text-blue-600 bg-blue-500/10' :
+                                                        item.type === 'Mutual Fund' ? 'border-purple-500 text-purple-600 bg-purple-500/10' :
+                                                            item.type === 'SIP' ? 'border-green-500 text-green-600 bg-green-500/10' :
+                                                                item.type === 'ETF' ? 'border-cyan-500 text-cyan-600 bg-cyan-500/10' :
+                                                                    'border-mono-400 text-mono-600 bg-mono-200'
                                                         }`}>{item.type}</span>
-                                                    <h3 className="font-semibold text-white group-hover:text-purple-400 transition-colors line-clamp-1">{item.name}</h3>
+                                                    <h3 className="font-semibold text-mono-900 group-hover:text-purple-600 transition-colors line-clamp-1">{item.name}</h3>
                                                 </div>
-                                                <p className="text-sm text-slate-400 line-clamp-1">{item.rationale}</p>
+                                                <p className="text-sm text-mono-600 line-clamp-1">{item.rationale}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-lg font-bold text-green-400">+{item.return || item.expected_return}%</p>
-                                                <p className="text-xs text-slate-500">Exp. CAGR</p>
+                                                <p className="text-lg font-bold text-green-600">+{item.return || item.expected_return}%</p>
+                                                <p className="text-xs text-mono-500">Exp. CAGR</p>
                                             </div>
                                         </div>
-                                        <div className="mt-3 flex items-center justify-between text-xs border-t border-slate-700/50 pt-2">
+                                        <div className="mt-3 flex items-center justify-between text-xs border-t border-mono-200 pt-2">
                                             {item.allocation > 0 ? (
-                                                <span className="text-slate-400">
-                                                    Allocation: <span className="text-white font-medium">{item.allocation}%</span>
-                                                    <span className="text-purple-400 ml-1">({formatCurrency(analysisdata.monthlySurplus * item.allocation / 100)})</span>
+                                                <span className="text-mono-500">
+                                                    Allocation: <span className="text-mono-900 font-medium">{item.allocation}%</span>
+                                                    <span className="text-purple-600 ml-1">({formatCurrency(analysisdata.monthlySurplus * item.allocation / 100)})</span>
                                                 </span>
                                             ) : (
-                                                <span className="text-slate-500">Alternative option</span>
+                                                <span className="text-mono-500">Alternative option</span>
                                             )}
-                                            <span className="flex items-center text-purple-400 group-hover:text-purple-300">
+                                            <span className="flex items-center text-purple-600 group-hover:text-purple-500">
                                                 View Details <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
                                             </span>
                                         </div>
@@ -252,11 +252,11 @@ export default function InvestmentsPage() {
                                     <Shield className="w-5 h-5 text-white" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-white">Safety Net</h2>
-                                    <p className="text-xs text-slate-400">Stable returns with FDs, RDs & PSUs</p>
+                                    <h2 className="text-xl font-bold text-mono-900">Safety Net</h2>
+                                    <p className="text-xs text-mono-500">Stable returns with FDs, RDs & PSUs</p>
                                 </div>
                             </div>
-                            <span className="text-xs text-slate-400 bg-slate-700/50 px-2 py-1 rounded">
+                            <span className="text-xs text-mono-500 bg-mono-200 px-2 py-1 rounded">
                                 Top {safetyRecommendations.length} picks
                             </span>
                         </div>
@@ -264,13 +264,13 @@ export default function InvestmentsPage() {
                         <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
                             {isLoadingInsights ? (
                                 <div className="glass-card p-8 flex flex-col items-center justify-center">
-                                    <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mb-2" />
-                                    <p className="text-slate-400 text-sm">Loading safety options...</p>
+                                    <Loader2 className="w-8 h-8 animate-spin text-emerald-500 mb-2" />
+                                    <p className="text-mono-500 text-sm">Loading safety options...</p>
                                 </div>
                             ) : safetyRecommendations.length === 0 ? (
                                 <div className="glass-card p-8 flex flex-col items-center justify-center">
-                                    <Shield className="w-12 h-12 text-slate-600 mb-2" />
-                                    <p className="text-slate-400 text-sm">No recommendations yet. Add transactions to get personalized advice.</p>
+                                    <Shield className="w-12 h-12 text-mono-400 mb-2" />
+                                    <p className="text-mono-500 text-sm">No recommendations yet. Add transactions to get personalized advice.</p>
                                 </div>
                             ) : (
                                 safetyRecommendations.map((item: any, idx: number) => (
@@ -297,40 +297,40 @@ export default function InvestmentsPage() {
                                         <div className="flex justify-between items-start">
                                             <div className="flex-1 pr-12">
                                                 <div className="flex items-center space-x-2 mb-1">
-                                                    <span className={`text-xs px-2 py-0.5 rounded border ${item.type === 'FD' ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10' :
-                                                        item.type === 'RD' ? 'border-teal-500 text-teal-400 bg-teal-500/10' :
-                                                            item.type === 'Gov Scheme' ? 'border-orange-500 text-orange-400 bg-orange-500/10' :
-                                                                item.type === 'PSU Bond' || item.type === 'Bond' ? 'border-blue-500 text-blue-400 bg-blue-500/10' :
-                                                                    item.type === 'Debt Fund' ? 'border-indigo-500 text-indigo-400 bg-indigo-500/10' :
-                                                                        'border-slate-500 text-slate-400 bg-slate-500/10'
+                                                    <span className={`text-xs px-2 py-0.5 rounded border ${item.type === 'FD' ? 'border-emerald-500 text-emerald-600 bg-emerald-500/10' :
+                                                        item.type === 'RD' ? 'border-teal-500 text-teal-600 bg-teal-500/10' :
+                                                            item.type === 'Gov Scheme' ? 'border-orange-500 text-orange-600 bg-orange-500/10' :
+                                                                item.type === 'PSU Bond' || item.type === 'Bond' ? 'border-blue-500 text-blue-600 bg-blue-500/10' :
+                                                                    item.type === 'Debt Fund' ? 'border-indigo-500 text-indigo-600 bg-indigo-500/10' :
+                                                                        'border-mono-400 text-mono-600 bg-mono-200'
                                                         }`}>{item.type}</span>
-                                                    <h3 className="font-semibold text-white group-hover:text-emerald-400 transition-colors line-clamp-1">{item.name}</h3>
+                                                    <h3 className="font-semibold text-mono-900 group-hover:text-emerald-600 transition-colors line-clamp-1">{item.name}</h3>
                                                 </div>
                                                 <div className="flex items-center space-x-4 mt-1">
                                                     <div className="text-xs">
-                                                        <span className="text-slate-500">Duration: </span>
-                                                        <span className="text-slate-300">{item.duration}</span>
+                                                        <span className="text-mono-500">Duration: </span>
+                                                        <span className="text-mono-700">{item.duration}</span>
                                                     </div>
                                                     <div className="text-xs">
-                                                        <span className="text-slate-500">Safety: </span>
-                                                        <span className="text-green-400">{item.safety}</span>
+                                                        <span className="text-mono-500">Safety: </span>
+                                                        <span className="text-green-600">{item.safety}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-lg font-bold text-emerald-400">{item.rate || item.interest_rate}%</p>
-                                                <p className="text-xs text-slate-500">Interest p.a.</p>
+                                                <p className="text-lg font-bold text-emerald-600">{item.rate || item.interest_rate}%</p>
+                                                <p className="text-xs text-mono-500">Interest p.a.</p>
                                             </div>
                                         </div>
-                                        <div className="mt-3 flex items-center justify-between text-xs border-t border-slate-700/50 pt-2">
-                                            <span className="text-slate-400">
-                                                Maturity: <span className="text-white font-medium">
+                                        <div className="mt-3 flex items-center justify-between text-xs border-t border-mono-200 pt-2">
+                                            <span className="text-mono-500">
+                                                Maturity: <span className="text-mono-900 font-medium">
                                                     {typeof item.maturityVal === 'number' || typeof item.maturity_value === 'number'
                                                         ? formatCurrency(item.maturityVal || item.maturity_value)
                                                         : (item.maturityVal || item.maturity_value || 'Variable')}
                                                 </span>
                                             </span>
-                                            <span className="flex items-center text-emerald-400 group-hover:text-emerald-300">
+                                            <span className="flex items-center text-emerald-600 group-hover:text-emerald-500">
                                                 View Plan <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
                                             </span>
                                         </div>
@@ -346,9 +346,9 @@ export default function InvestmentsPage() {
                 {agentInsights?.aggregated_advice && (
                     <div className="glass-card p-4 border-l-4 border-blue-500">
                         <div className="flex items-start space-x-3">
-                            <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                            <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                             <div className="flex-1">
-                                <h3 className="font-semibold text-white mb-2">AI Recommendation</h3>
+                                <h3 className="font-semibold text-mono-900 mb-2">AI Recommendation</h3>
                                 <MarkdownRenderer content={agentInsights.aggregated_advice} />
                             </div>
                         </div>
@@ -357,7 +357,7 @@ export default function InvestmentsPage() {
 
                 {/* Disclaimer */}
                 <div className="text-center p-4">
-                    <p className="text-xs text-slate-600">
+                    <p className="text-xs text-mono-500">
                         Disclaimer: These recommendations are generated by AI based on your financial data and market trends.
                         Investments are subject to market risks. Please consult a certified financial advisor before making any decisions.
                     </p>

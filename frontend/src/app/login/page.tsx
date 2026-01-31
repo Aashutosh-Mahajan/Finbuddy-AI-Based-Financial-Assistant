@@ -39,10 +39,10 @@ export default function LoginPage() {
 
     return (
         <main className="min-h-screen flex items-center justify-center px-4">
-            {/* Background Effects */}
+            {/* Background Effects - Subtle */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl" />
-                <div className="absolute -bottom-1/4 -left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+                <div className="absolute -top-1/2 -right-1/4 w-[600px] h-[600px] bg-mono-200/30 rounded-full blur-3xl" />
+                <div className="absolute -bottom-1/4 -left-1/4 w-[500px] h-[500px] bg-mono-100/50 rounded-full blur-3xl" />
             </div>
 
             <motion.div
@@ -54,26 +54,26 @@ export default function LoginPage() {
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center space-x-2">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-cyan-500 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-mono-900 flex items-center justify-center">
                             <Sparkles className="w-7 h-7 text-white" />
                         </div>
-                        <span className="text-2xl font-display font-bold text-white">FinBuddy</span>
+                        <span className="text-2xl font-display font-bold text-mono-900 tracking-tight">FinBuddy</span>
                     </Link>
                 </div>
 
-                {/* Login Card */}
+                {/* Login Card - Glass Formula */}
                 <div className="glass-card p-8">
-                    <h1 className="text-2xl font-bold text-white mb-2">Welcome back</h1>
-                    <p className="text-slate-400 mb-8">Sign in to continue to your dashboard</p>
+                    <h1 className="text-2xl font-bold text-mono-900 mb-2 tracking-tight">Welcome back</h1>
+                    <p className="text-mono-500 mb-8 font-medium">Sign in to continue to your dashboard</p>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                            <label className="block text-sm font-medium text-mono-700 mb-2">
                                 Email
                             </label>
                             <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-mono-400" />
                                 <input
                                     type="email"
                                     {...register('email', { required: 'Email is required' })}
@@ -82,17 +82,17 @@ export default function LoginPage() {
                                 />
                             </div>
                             {errors.email && (
-                                <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
+                                <p className="text-mono-700 text-sm mt-1 font-medium">{errors.email.message}</p>
                             )}
                         </div>
 
                         {/* Password */}
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                            <label className="block text-sm font-medium text-mono-700 mb-2">
                                 Password
                             </label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-mono-400" />
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     {...register('password', { required: 'Password is required' })}
@@ -102,19 +102,19 @@ export default function LoginPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-mono-400 hover:text-mono-700 transition-all duration-300"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
                             </div>
                             {errors.password && (
-                                <p className="text-red-400 text-sm mt-1">{errors.password.message}</p>
+                                <p className="text-mono-700 text-sm mt-1 font-medium">{errors.password.message}</p>
                             )}
                         </div>
 
                         {/* Forgot Password */}
                         <div className="flex justify-end">
-                            <Link href="/forgot-password" className="text-sm text-primary-400 hover:text-primary-300">
+                            <Link href="/forgot-password" className="text-sm text-mono-700 hover:text-mono-900 font-medium transition-all duration-300">
                                 Forgot password?
                             </Link>
                         </div>
@@ -152,9 +152,9 @@ export default function LoginPage() {
                     </form>
 
                     {/* Register Link */}
-                    <p className="text-center text-slate-400 mt-6">
+                    <p className="text-center text-mono-500 mt-6 font-medium">
                         Don't have an account?{' '}
-                        <Link href="/register" className="text-primary-400 hover:text-primary-300 font-medium">
+                        <Link href="/register" className="text-mono-900 hover:underline font-semibold">
                             Sign up
                         </Link>
                     </p>

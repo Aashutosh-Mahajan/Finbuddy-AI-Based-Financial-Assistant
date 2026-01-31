@@ -6,22 +6,22 @@
 
 @layer base {
   :root {
-    --background: 15 23 42;
-    --foreground: 248 250 252;
-    --primary: 14 165 233;
-    --secondary: 100 116 139;
-    --accent: 16 185 129;
-    --muted: 30 41 59;
-    --border: 51 65 85;
+    --background: 248 248 248;
+    --foreground: 17 17 17;
+    --primary: 17 17 17;
+    --secondary: 107 107 107;
+    --accent: 10 10 10;
+    --muted: 229 229 229;
+    --border: 229 229 229;
   }
 
   * {
-    @apply border-slate-700;
+    @apply border-mono-200;
   }
 
   body {
-    @apply bg-dark-400 text-slate-100 font-sans antialiased;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    @apply bg-mono-50 text-mono-900 font-sans antialiased;
+    background: radial-gradient(ellipse at top, #F8F8F8 0%, #E5E5E5 100%);
     min-height: 100vh;
   }
 
@@ -31,29 +31,56 @@
 }
 
 @layer components {
-  /* Glass Card Effect */
+  /* ═══════════════════════════════════════════════════════════════
+     THE GLASS FORMULA - Standard Cards
+     Frosted glass effect with subtle shadow
+  ═══════════════════════════════════════════════════════════════ */
   .glass-card {
-    @apply bg-slate-900/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl;
-    box-shadow: 
-      0 4px 6px -1px rgba(0, 0, 0, 0.3),
-      0 2px 4px -2px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(15px) saturate(160%);
+    -webkit-backdrop-filter: blur(15px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease-in-out;
   }
 
   .glass-card-hover {
-    @apply glass-card transition-all duration-300;
+    @apply glass-card;
   }
 
   .glass-card-hover:hover {
-    @apply border-primary-500/30 shadow-glow;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     THE ONYX FORMULA - Emphasis/Dark Cards
+     Deep black sections for contrast
+  ═══════════════════════════════════════════════════════════════ */
+  .onyx-card {
+    background: #0A0A0A;
+    border-radius: 24px;
+    color: #FFFFFF;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .onyx-card-hover {
+    @apply onyx-card;
+  }
+
+  .onyx-card-hover:hover {
+    box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.2);
     transform: translateY(-2px);
   }
 
-  /* Gradient Border */
+  /* Gradient Border - Monochrome version */
   .gradient-border {
     position: relative;
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
   }
 
   .gradient-border::before {
@@ -62,75 +89,143 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 50%, #06b6d4 100%);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 100%);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: xor;
     -webkit-mask-composite: xor;
     pointer-events: none;
   }
 
-  /* Button Variants */
+  /* ═══════════════════════════════════════════════════════════════
+     BUTTON VARIANTS - Monochrome
+  ═══════════════════════════════════════════════════════════════ */
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium rounded-xl;
-    @apply hover:from-primary-500 hover:to-primary-400 transition-all duration-200;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:ring-offset-2 focus:ring-offset-slate-900;
-    @apply shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30;
-    @apply hover:-translate-y-0.5 active:translate-y-0;
+    @apply px-6 py-3 bg-mono-900 text-white font-medium;
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary:hover {
+    @apply bg-mono-800;
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:focus {
+    @apply outline-none ring-2 ring-mono-400 ring-offset-2;
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-slate-800 text-slate-100 font-medium rounded-xl border border-slate-700;
-    @apply hover:bg-slate-700 hover:border-slate-600 transition-all duration-200;
-    @apply focus:outline-none focus:ring-2 focus:ring-slate-500/50;
+    @apply px-6 py-3 font-medium text-mono-700;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-secondary:hover {
+    @apply bg-white text-mono-900;
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
   }
 
   .btn-ghost {
-    @apply px-4 py-2 text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 rounded-lg transition-all duration-200;
+    @apply px-4 py-2 text-mono-500 font-medium;
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
   }
 
-  /* Input Styles */
+  .btn-ghost:hover {
+    @apply text-mono-900 bg-mono-100;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     INPUT STYLES - Glass aesthetic
+  ═══════════════════════════════════════════════════════════════ */
   .input-field {
-    @apply w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100;
-    @apply placeholder:text-slate-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20;
-    @apply transition-all duration-200;
+    @apply w-full px-4 py-3 text-mono-900;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
   }
 
-  /* Stats Card */
+  .input-field::placeholder {
+    @apply text-mono-400;
+  }
+
+  .input-field:focus {
+    @apply outline-none;
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     STATS CARD
+  ═══════════════════════════════════════════════════════════════ */
   .stats-card {
     @apply glass-card p-6 flex flex-col space-y-2;
   }
 
   .stats-value {
-    @apply text-3xl font-bold bg-gradient-to-r from-primary-400 to-cyan-400 bg-clip-text text-transparent;
+    @apply text-3xl font-bold text-mono-900;
+    letter-spacing: -0.02em;
   }
 
   .stats-label {
-    @apply text-sm text-slate-400 font-medium;
+    @apply text-sm text-mono-500 font-medium;
   }
 
-  /* Chat Message */
+  /* ═══════════════════════════════════════════════════════════════
+     CHAT MESSAGES - Monochrome
+  ═══════════════════════════════════════════════════════════════ */
   .chat-message-user {
-    @apply bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-2xl rounded-br-md px-4 py-3;
+    @apply bg-mono-900 text-white px-4 py-3;
+    border-radius: 20px;
+    border-bottom-right-radius: 6px;
   }
 
   .chat-message-assistant {
-    @apply bg-slate-800 text-slate-100 rounded-2xl rounded-bl-md px-4 py-3 border border-slate-700;
+    @apply text-mono-800 px-4 py-3;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    border-bottom-left-radius: 6px;
   }
 
-  /* Navigation */
+  /* ═══════════════════════════════════════════════════════════════
+     NAVIGATION - Monochrome with black active states
+  ═══════════════════════════════════════════════════════════════ */
   .nav-link {
-    @apply flex items-center space-x-3 px-4 py-3 text-slate-400 rounded-xl transition-all duration-200;
-    @apply hover:bg-slate-800/50 hover:text-slate-100;
+    @apply flex items-center space-x-3 px-4 py-3 text-mono-500 font-medium;
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .nav-link:hover {
+    @apply text-mono-900 bg-mono-100;
   }
 
   .nav-link-active {
-    @apply bg-primary-600/10 text-primary-400 border-l-2 border-primary-500;
+    @apply bg-mono-900 text-white;
   }
 
-  /* Scrollbar */
+  .nav-link-active:hover {
+    @apply bg-mono-800 text-white;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     SCROLLBAR - Subtle monochrome
+  ═══════════════════════════════════════════════════════════════ */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #475569 transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -142,38 +237,45 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #475569;
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 3px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
+    background: rgba(0, 0, 0, 0.25);
   }
 
-  /* Loading Skeleton */
+  /* Loading Skeleton - Light */
   .skeleton {
-    @apply animate-pulse bg-slate-700/50 rounded;
+    @apply animate-pulse rounded;
+    background: rgba(0, 0, 0, 0.06);
   }
 
-  /* Badge */
+  /* ═══════════════════════════════════════════════════════════════
+     BADGES - Monochrome variants
+  ═══════════════════════════════════════════════════════════════ */
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
 
   .badge-success {
-    @apply badge bg-green-500/20 text-green-400;
+    @apply badge bg-mono-900 text-white;
   }
 
   .badge-warning {
-    @apply badge bg-yellow-500/20 text-yellow-400;
+    @apply badge;
+    background: rgba(0, 0, 0, 0.08);
+    color: #111111;
   }
 
   .badge-danger {
-    @apply badge bg-red-500/20 text-red-400;
+    @apply badge bg-mono-700 text-white;
   }
 
   .badge-info {
-    @apply badge bg-blue-500/20 text-blue-400;
+    @apply badge;
+    background: rgba(0, 0, 0, 0.05);
+    color: #6B6B6B;
   }
 
   /* Chart Container */
@@ -187,28 +289,64 @@
     transform-origin: 50% 50%;
   }
 
-  /* Glow Effects */
-  .glow-green {
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+  /* ═══════════════════════════════════════════════════════════════
+     TABLE/LIST STYLING - Light dividers
+  ═══════════════════════════════════════════════════════════════ */
+  .table-row {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease-in-out;
   }
 
-  .glow-red {
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  .table-row:hover {
+    background: rgba(0, 0, 0, 0.02);
   }
 
-  .glow-blue {
-    box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+  /* ═══════════════════════════════════════════════════════════════
+     AVATAR - Grayscale by default, color on hover
+  ═══════════════════════════════════════════════════════════════ */
+  .avatar-grayscale {
+    filter: grayscale(100%);
+    transition: filter 0.3s ease-in-out;
+  }
+
+  .avatar-grayscale:hover {
+    filter: grayscale(0%);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     FLOATING SIDEBAR - Glass effect
+  ═══════════════════════════════════════════════════════════════ */
+  .sidebar-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    margin: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
   }
 }
 
 @layer utilities {
-  /* Text Gradient */
+  /* Text styles for monochrome */
   .text-gradient {
-    @apply bg-gradient-to-r from-primary-400 via-cyan-400 to-primary-400 bg-clip-text text-transparent;
+    @apply text-mono-900 font-bold;
+    letter-spacing: -0.02em;
   }
 
   .text-gradient-gold {
-    @apply bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 bg-clip-text text-transparent;
+    @apply text-mono-700 font-bold;
+    letter-spacing: -0.02em;
+  }
+
+  /* Heading styles */
+  .heading-primary {
+    @apply text-mono-900 font-bold;
+    letter-spacing: -0.02em;
+  }
+
+  .text-body {
+    @apply text-mono-500 font-medium;
   }
 
   /* Fade In Animation */
@@ -227,4 +365,9 @@
   .stagger-3 { animation-delay: 0.3s; }
   .stagger-4 { animation-delay: 0.4s; }
   .stagger-5 { animation-delay: 0.5s; }
+
+  /* Divider - subtle */
+  .divider-subtle {
+    border-color: rgba(0, 0, 0, 0.05);
+  }
 }

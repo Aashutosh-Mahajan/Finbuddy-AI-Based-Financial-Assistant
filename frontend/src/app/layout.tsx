@@ -27,7 +27,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
-            <body className="min-h-screen bg-dark-400">
+            <body className="min-h-screen bg-mono-50">
                 <Providers>
                     {children}
                     <Toaster
@@ -35,20 +35,23 @@ export default function RootLayout({
                         toastOptions={{
                             duration: 4000,
                             style: {
-                                background: '#1e293b',
-                                color: '#f1f5f9',
-                                border: '1px solid #334155',
+                                background: 'rgba(255, 255, 255, 0.9)',
+                                backdropFilter: 'blur(15px)',
+                                color: '#111111',
+                                border: '1px solid rgba(0, 0, 0, 0.06)',
+                                borderRadius: '12px',
+                                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.08)',
                             },
                             success: {
                                 iconTheme: {
-                                    primary: '#10b981',
-                                    secondary: '#f1f5f9',
+                                    primary: '#111111',
+                                    secondary: '#FFFFFF',
                                 },
                             },
                             error: {
                                 iconTheme: {
-                                    primary: '#ef4444',
-                                    secondary: '#f1f5f9',
+                                    primary: '#404040',
+                                    secondary: '#FFFFFF',
                                 },
                             },
                         }}

@@ -91,68 +91,68 @@ function TaxCalculator({ onClose }: { onClose: () => void }) {
         <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Annual Income (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Annual Income (₹)</label>
                     <input
                         type="number"
                         value={income}
                         onChange={(e) => setIncome(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400"
                     />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">80C Deductions (Max ₹1.5L)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">80C Deductions (Max ₹1.5L)</label>
                     <input
                         type="number"
                         value={deductions80C}
                         onChange={(e) => setDeductions80C(Math.min(150000, Number(e.target.value)))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400"
                     />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">80D Health Insurance (Max ₹75K)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">80D Health Insurance (Max ₹75K)</label>
                     <input
                         type="number"
                         value={deductions80D}
                         onChange={(e) => setDeductions80D(Math.min(75000, Number(e.target.value)))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400"
                     />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">HRA Exemption (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">HRA Exemption (₹)</label>
                     <input
                         type="number"
                         value={hra}
                         onChange={(e) => setHra(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400"
                     />
                 </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-                <div className={`p-4 rounded-lg border-2 ${betterRegime === 'old' ? 'border-green-500 bg-green-500/10' : 'border-slate-600 bg-slate-800/50'}`}>
+                <div className={`p-4 rounded-xl border-2 ${betterRegime === 'old' ? 'border-green-500 bg-green-50' : 'border-mono-300 bg-mono-100'}`}>
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-slate-300 font-medium">Old Regime</span>
-                        {betterRegime === 'old' && <CheckCircle className="w-5 h-5 text-green-400" />}
+                        <span className="text-mono-700 font-medium">Old Regime</span>
+                        {betterRegime === 'old' && <CheckCircle className="w-5 h-5 text-green-600" />}
                     </div>
-                    <p className="text-2xl font-bold text-white">{formatCurrency(oldTax)}</p>
-                    <p className="text-xs text-slate-400">After all deductions</p>
+                    <p className="text-2xl font-bold text-mono-900">{formatCurrency(oldTax)}</p>
+                    <p className="text-xs text-mono-500">After all deductions</p>
                 </div>
-                <div className={`p-4 rounded-lg border-2 ${betterRegime === 'new' ? 'border-green-500 bg-green-500/10' : 'border-slate-600 bg-slate-800/50'}`}>
+                <div className={`p-4 rounded-xl border-2 ${betterRegime === 'new' ? 'border-green-500 bg-green-50' : 'border-mono-300 bg-mono-100'}`}>
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-slate-300 font-medium">New Regime</span>
-                        {betterRegime === 'new' && <CheckCircle className="w-5 h-5 text-green-400" />}
+                        <span className="text-mono-700 font-medium">New Regime</span>
+                        {betterRegime === 'new' && <CheckCircle className="w-5 h-5 text-green-600" />}
                     </div>
-                    <p className="text-2xl font-bold text-white">{formatCurrency(newTax)}</p>
-                    <p className="text-xs text-slate-400">Limited deductions</p>
+                    <p className="text-2xl font-bold text-mono-900">{formatCurrency(newTax)}</p>
+                    <p className="text-xs text-mono-500">Limited deductions</p>
                 </div>
             </div>
 
-            <div className="p-4 bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-lg border border-blue-500/30">
+            <div className="p-4 bg-mono-900 rounded-xl">
                 <div className="flex items-center space-x-2 mb-2">
-                    <Info className="w-5 h-5 text-blue-400" />
+                    <Info className="w-5 h-5 text-white" />
                     <span className="font-semibold text-white">Recommendation</span>
                 </div>
-                <p className="text-slate-300">
+                <p className="text-mono-300">
                     Based on your inputs, the <span className="text-green-400 font-bold">{betterRegime === 'old' ? 'Old Regime' : 'New Regime'}</span> is 
                     better for you. You can save <span className="text-green-400 font-bold">{formatCurrency(savings)}</span> annually!
                 </p>
@@ -191,56 +191,56 @@ function EMICalculator({ onClose }: { onClose: () => void }) {
         <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Loan Amount (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Loan Amount (₹)</label>
                     <input type="number" value={loanAmount} onChange={(e) => setLoanAmount(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                     <div className="flex gap-2 mt-2">
                         {[1000000, 2500000, 5000000, 10000000].map((amt) => (
                             <button key={amt} onClick={() => setLoanAmount(amt)}
-                                className={`text-xs px-2 py-1 rounded ${loanAmount === amt ? 'bg-green-500 text-white' : 'bg-slate-700 text-slate-300'}`}>
+                                className={`text-xs px-2 py-1 rounded ${loanAmount === amt ? 'bg-green-600 text-white' : 'bg-mono-200 text-mono-700'}`}>
                                 {amt >= 10000000 ? '1Cr' : `${amt / 100000}L`}
                             </button>
                         ))}
                     </div>
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Interest Rate (%): {interestRate}%</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Interest Rate (%): {interestRate}%</label>
                     <input type="range" min="5" max="18" step="0.1" value={interestRate}
-                        onChange={(e) => setInterestRate(Number(e.target.value))} className="w-full accent-green-500" />
+                        onChange={(e) => setInterestRate(Number(e.target.value))} className="w-full accent-green-600" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Loan Tenure: {tenure} Years</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Loan Tenure: {tenure} Years</label>
                     <input type="range" min="1" max="30" value={tenure}
-                        onChange={(e) => setTenure(Number(e.target.value))} className="w-full accent-green-500" />
+                        onChange={(e) => setTenure(Number(e.target.value))} className="w-full accent-green-600" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Prepayment Amount (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Prepayment Amount (₹)</label>
                     <input type="number" value={prepayment} onChange={(e) => setPrepayment(Math.min(loanAmount, Number(e.target.value)))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                 </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-                <div className="p-4 bg-slate-800/50 rounded-lg text-center">
-                    <p className="text-xs text-slate-400 uppercase">Monthly EMI</p>
-                    <p className="text-2xl font-bold text-green-400">{formatCurrency(emi)}</p>
+                <div className="p-4 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <p className="text-xs text-mono-500 uppercase">Monthly EMI</p>
+                    <p className="text-2xl font-bold text-green-600">{formatCurrency(emi)}</p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg text-center">
-                    <p className="text-xs text-slate-400 uppercase">Total Interest</p>
-                    <p className="text-2xl font-bold text-orange-400">{formatCurrency(totalInterest)}</p>
+                <div className="p-4 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <p className="text-xs text-mono-500 uppercase">Total Interest</p>
+                    <p className="text-2xl font-bold text-orange-600">{formatCurrency(totalInterest)}</p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg text-center">
-                    <p className="text-xs text-slate-400 uppercase">Total Payment</p>
-                    <p className="text-2xl font-bold text-white">{formatCurrency(totalPayment)}</p>
+                <div className="p-4 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <p className="text-xs text-mono-500 uppercase">Total Payment</p>
+                    <p className="text-2xl font-bold text-mono-900">{formatCurrency(totalPayment)}</p>
                 </div>
             </div>
 
             <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Principal vs Interest</span>
-                    <span className="text-slate-400">{(100 - interestPercentage).toFixed(1)}% : {interestPercentage.toFixed(1)}%</span>
+                    <span className="text-mono-600">Principal vs Interest</span>
+                    <span className="text-mono-600">{(100 - interestPercentage).toFixed(1)}% : {interestPercentage.toFixed(1)}%</span>
                 </div>
-                <div className="h-4 bg-slate-700 rounded-full overflow-hidden flex">
+                <div className="h-4 bg-mono-200 rounded-full overflow-hidden flex">
                     <div className="bg-green-500 h-full transition-all duration-300" style={{ width: `${100 - interestPercentage}%` }} />
                     <div className="bg-orange-500 h-full transition-all duration-300" style={{ width: `${interestPercentage}%` }} />
                 </div>
@@ -275,65 +275,65 @@ function SIPCalculator({ onClose }: { onClose: () => void }) {
         <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Monthly SIP Amount (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Monthly SIP Amount (₹)</label>
                     <input type="number" value={monthlyInvestment} onChange={(e) => setMonthlyInvestment(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                     <div className="flex gap-2 mt-2">
                         {[5000, 10000, 25000, 50000].map((amt) => (
                             <button key={amt} onClick={() => setMonthlyInvestment(amt)}
-                                className={`text-xs px-2 py-1 rounded ${monthlyInvestment === amt ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'}`}>
+                                className={`text-xs px-2 py-1 rounded ${monthlyInvestment === amt ? 'bg-emerald-600 text-white' : 'bg-mono-200 text-mono-700'}`}>
                                 {amt >= 1000 ? `${amt / 1000}K` : amt}
                             </button>
                         ))}
                     </div>
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Expected Return: {expectedReturn}% p.a.</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Expected Return: {expectedReturn}% p.a.</label>
                     <input type="range" min="6" max="20" step="0.5" value={expectedReturn}
-                        onChange={(e) => setExpectedReturn(Number(e.target.value))} className="w-full accent-emerald-500" />
+                        onChange={(e) => setExpectedReturn(Number(e.target.value))} className="w-full accent-emerald-600" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Investment Period: {years} Years</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Investment Period: {years} Years</label>
                     <input type="range" min="1" max="40" value={years}
-                        onChange={(e) => setYears(Number(e.target.value))} className="w-full accent-emerald-500" />
+                        onChange={(e) => setYears(Number(e.target.value))} className="w-full accent-emerald-600" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Target Goal Amount (Optional)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Target Goal Amount (Optional)</label>
                     <input type="number" value={goalAmount} onChange={(e) => setGoalAmount(Number(e.target.value))}
-                        placeholder="Enter your target corpus" className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        placeholder="Enter your target corpus" className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                 </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-                <div className="p-4 bg-slate-800/50 rounded-lg text-center">
-                    <p className="text-xs text-slate-400 uppercase">Total Invested</p>
-                    <p className="text-2xl font-bold text-white">{formatCurrency(totalInvested)}</p>
+                <div className="p-4 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <p className="text-xs text-mono-500 uppercase">Total Invested</p>
+                    <p className="text-2xl font-bold text-mono-900">{formatCurrency(totalInvested)}</p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg text-center">
-                    <p className="text-xs text-slate-400 uppercase">Wealth Gained</p>
-                    <p className="text-2xl font-bold text-green-400">+{formatCurrency(wealthGained)}</p>
+                <div className="p-4 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <p className="text-xs text-mono-500 uppercase">Wealth Gained</p>
+                    <p className="text-2xl font-bold text-green-600">+{formatCurrency(wealthGained)}</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-emerald-900/50 to-teal-900/50 rounded-lg text-center border border-emerald-500/30">
-                    <p className="text-xs text-slate-400 uppercase">Future Value</p>
-                    <p className="text-2xl font-bold text-emerald-400">{formatCurrency(futureValue)}</p>
+                <div className="p-4 bg-emerald-50 rounded-xl text-center border-2 border-emerald-500">
+                    <p className="text-xs text-mono-500 uppercase">Future Value</p>
+                    <p className="text-2xl font-bold text-emerald-600">{formatCurrency(futureValue)}</p>
                 </div>
             </div>
 
             {goalAmount > 0 && (
-                <div className="p-4 bg-blue-900/30 rounded-lg border border-blue-500/30">
+                <div className="p-4 bg-mono-900 rounded-xl">
                     <div className="flex items-center space-x-2 mb-2">
-                        <TrendingUp className="w-5 h-5 text-blue-400" />
+                        <TrendingUp className="w-5 h-5 text-white" />
                         <span className="font-semibold text-white">Goal Planning</span>
                     </div>
-                    <p className="text-slate-300">
-                        To reach your goal of <span className="text-blue-400 font-bold">{formatCurrency(goalAmount)}</span> in {years} years,
-                        you need to invest <span className="text-blue-400 font-bold">{formatCurrency(requiredSIP)}</span> monthly.
+                    <p className="text-mono-300">
+                        To reach your goal of <span className="text-emerald-400 font-bold">{formatCurrency(goalAmount)}</span> in {years} years,
+                        you need to invest <span className="text-emerald-400 font-bold">{formatCurrency(requiredSIP)}</span> monthly.
                     </p>
                 </div>
             )}
 
             <div className="space-y-2">
-                <p className="text-sm text-slate-400">Investment Growth Over Time</p>
+                <p className="text-sm text-mono-600">Investment Growth Over Time</p>
                 <div className="h-20 flex items-end gap-1">
                     {Array.from({ length: Math.min(years, 20) }, (_, i) => {
                         const yr = i + 1
@@ -341,7 +341,7 @@ function SIPCalculator({ onClose }: { onClose: () => void }) {
                         const months = yr * 12
                         const fv = monthlyInvestment * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate)
                         const height = (fv / futureValue) * 100
-                        return <div key={yr} className="flex-1 bg-emerald-500/70 rounded-t transition-all duration-300 hover:bg-emerald-400" style={{ height: `${height}%` }} title={`Year ${yr}: ${formatCurrency(fv)}`} />
+                        return <div key={yr} className="flex-1 bg-emerald-500 rounded-t transition-all duration-300 hover:bg-emerald-400" style={{ height: `${height}%` }} title={`Year ${yr}: ${formatCurrency(fv)}`} />
                     })}
                 </div>
             </div>
@@ -370,46 +370,46 @@ function HomeLoanCalculator({ onClose }: { onClose: () => void }) {
         <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Monthly Income (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Monthly Income (₹)</label>
                     <input type="number" value={monthlyIncome} onChange={(e) => setMonthlyIncome(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Existing EMIs (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Existing EMIs (₹)</label>
                     <input type="number" value={existingEMI} onChange={(e) => setExistingEMI(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Interest Rate: {interestRate}%</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Interest Rate: {interestRate}%</label>
                     <input type="range" min="6" max="12" step="0.1" value={interestRate}
                         onChange={(e) => setInterestRate(Number(e.target.value))} className="w-full accent-orange-500" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Loan Tenure: {tenure} Years</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Loan Tenure: {tenure} Years</label>
                     <input type="range" min="5" max="30" value={tenure}
                         onChange={(e) => setTenure(Number(e.target.value))} className="w-full accent-orange-500" />
                 </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-6 bg-gradient-to-br from-orange-900/50 to-amber-900/50 rounded-lg border border-orange-500/30 text-center">
-                    <Home className="w-8 h-8 text-orange-400 mx-auto mb-2" />
-                    <p className="text-xs text-slate-400 uppercase mb-1">Eligible Loan Amount</p>
-                    <p className="text-3xl font-bold text-orange-400">{formatCurrency(eligibleAmount)}</p>
+                <div className="p-6 bg-orange-50 rounded-xl border-2 border-orange-500 text-center">
+                    <Home className="w-8 h-8 text-orange-600 mx-auto mb-2" />
+                    <p className="text-xs text-mono-500 uppercase mb-1">Eligible Loan Amount</p>
+                    <p className="text-3xl font-bold text-orange-600">{formatCurrency(eligibleAmount)}</p>
                 </div>
-                <div className="p-6 bg-slate-800/50 rounded-lg text-center">
-                    <Calculator className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                    <p className="text-xs text-slate-400 uppercase mb-1">Maximum EMI Capacity</p>
-                    <p className="text-3xl font-bold text-white">{formatCurrency(maxEMI)}</p>
+                <div className="p-6 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <Calculator className="w-8 h-8 text-mono-500 mx-auto mb-2" />
+                    <p className="text-xs text-mono-500 uppercase mb-1">Maximum EMI Capacity</p>
+                    <p className="text-3xl font-bold text-mono-900">{formatCurrency(maxEMI)}</p>
                 </div>
             </div>
 
-            <div className={`p-4 rounded-lg border ${Number(dti) > 40 ? 'bg-red-900/30 border-red-500/30' : 'bg-green-900/30 border-green-500/30'}`}>
+            <div className={`p-4 rounded-xl border-2 ${Number(dti) > 40 ? 'bg-red-50 border-red-500' : 'bg-green-50 border-green-500'}`}>
                 <div className="flex items-center space-x-2 mb-2">
-                    {Number(dti) > 40 ? <AlertCircle className="w-5 h-5 text-red-400" /> : <CheckCircle className="w-5 h-5 text-green-400" />}
-                    <span className="font-semibold text-white">Debt-to-Income Ratio: {dti}%</span>
+                    {Number(dti) > 40 ? <AlertCircle className="w-5 h-5 text-red-600" /> : <CheckCircle className="w-5 h-5 text-green-600" />}
+                    <span className="font-semibold text-mono-900">Debt-to-Income Ratio: {dti}%</span>
                 </div>
-                <p className="text-slate-300 text-sm">
+                <p className="text-mono-700 text-sm">
                     {Number(dti) > 40 ? 'Your current EMI burden is high. Consider reducing existing debts before applying for a home loan.' : 'Your debt-to-income ratio is healthy. You have good chances of loan approval!'}
                 </p>
             </div>
@@ -441,9 +441,9 @@ function CreditCardMatcher({ onClose }: { onClose: () => void }) {
         <div className="space-y-6">
             <div className="grid md:grid-cols-3 gap-4">
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Primary Spending</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Primary Spending</label>
                     <select value={spendingCategory} onChange={(e) => setSpendingCategory(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white">
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400">
                         <option value="general">General</option>
                         <option value="travel">Travel</option>
                         <option value="shopping">Shopping</option>
@@ -453,40 +453,40 @@ function CreditCardMatcher({ onClose }: { onClose: () => void }) {
                     </select>
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Monthly Spending (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Monthly Spending (₹)</label>
                     <input type="number" value={monthlySpending} onChange={(e) => setMonthlySpending(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Annual Income (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Annual Income (₹)</label>
                     <input type="number" value={annualIncome} onChange={(e) => setAnnualIncome(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                 </div>
             </div>
 
-            <div className="p-4 bg-purple-900/30 rounded-lg border border-purple-500/30">
-                <p className="text-slate-300">Potential Annual Savings: <span className="text-purple-400 font-bold">{formatCurrency(potentialCashback)}</span> with the right credit card!</p>
+            <div className="p-4 bg-purple-50 rounded-xl border-2 border-purple-500">
+                <p className="text-mono-700">Potential Annual Savings: <span className="text-purple-600 font-bold">{formatCurrency(potentialCashback)}</span> with the right credit card!</p>
             </div>
 
             <div className="space-y-3 max-h-80 overflow-y-auto">
                 {eligibleCards.length > 0 ? eligibleCards.map((card, idx) => (
-                    <div key={idx} className="p-4 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-purple-500/50 transition-all">
+                    <div key={idx} className="p-4 bg-mono-100 rounded-xl border border-mono-200 hover:border-purple-400 transition-all">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-3">
-                                <CreditCard className="w-6 h-6 text-purple-400" />
+                                <CreditCard className="w-6 h-6 text-purple-600" />
                                 <div>
-                                    <h4 className="font-semibold text-white">{card.name}</h4>
-                                    <p className="text-xs text-slate-400">{card.rewards}</p>
+                                    <h4 className="font-semibold text-mono-900">{card.name}</h4>
+                                    <p className="text-xs text-mono-500">{card.rewards}</p>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className="text-green-400 font-bold">{card.cashback}</p>
-                                <p className="text-xs text-slate-400">Fee: ₹{card.fee}/yr</p>
+                                <p className="text-green-600 font-bold">{card.cashback}</p>
+                                <p className="text-xs text-mono-500">Fee: ₹{card.fee}/yr</p>
                             </div>
                         </div>
                     </div>
                 )) : (
-                    <div className="text-center py-8 text-slate-400">
+                    <div className="text-center py-8 text-mono-500">
                         <CreditCard className="w-12 h-12 mx-auto mb-2 opacity-50" />
                         <p>No cards match your criteria. Try adjusting filters.</p>
                     </div>
@@ -516,52 +516,52 @@ function EducationLoanCalculator({ onClose }: { onClose: () => void }) {
         <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Course/Tuition Fees (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Course/Tuition Fees (₹)</label>
                     <input type="number" value={courseFee} onChange={(e) => setCourseFee(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Living Expenses (₹)</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Living Expenses (₹)</label>
                     <input type="number" value={livingExpenses} onChange={(e) => setLivingExpenses(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white" />
+                        className="w-full bg-mono-100 border border-mono-300 rounded-lg px-4 py-2.5 text-mono-900 focus:outline-none focus:ring-2 focus:ring-mono-400" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Interest Rate: {interestRate}%</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Interest Rate: {interestRate}%</label>
                     <input type="range" min="7" max="14" step="0.1" value={interestRate}
-                        onChange={(e) => setInterestRate(Number(e.target.value))} className="w-full accent-indigo-500" />
+                        onChange={(e) => setInterestRate(Number(e.target.value))} className="w-full accent-indigo-600" />
                 </div>
                 <div>
-                    <label className="text-sm text-slate-400 mb-1 block">Course Duration (Moratorium): {moratoriumYears} Years</label>
+                    <label className="text-sm text-mono-600 mb-1 block">Course Duration (Moratorium): {moratoriumYears} Years</label>
                     <input type="range" min="1" max="6" value={moratoriumYears}
-                        onChange={(e) => setMoratoriumYears(Number(e.target.value))} className="w-full accent-indigo-500" />
+                        onChange={(e) => setMoratoriumYears(Number(e.target.value))} className="w-full accent-indigo-600" />
                 </div>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 bg-slate-800/50 rounded-lg text-center">
-                    <p className="text-xs text-slate-400">Total Loan</p>
-                    <p className="text-xl font-bold text-white">{formatCurrency(totalLoan)}</p>
+                <div className="p-4 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <p className="text-xs text-mono-500">Total Loan</p>
+                    <p className="text-xl font-bold text-mono-900">{formatCurrency(totalLoan)}</p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg text-center">
-                    <p className="text-xs text-slate-400">Moratorium Interest</p>
-                    <p className="text-xl font-bold text-orange-400">{formatCurrency(Math.round(moratoriumInterest))}</p>
+                <div className="p-4 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <p className="text-xs text-mono-500">Moratorium Interest</p>
+                    <p className="text-xl font-bold text-orange-600">{formatCurrency(Math.round(moratoriumInterest))}</p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg text-center">
-                    <p className="text-xs text-slate-400">Monthly EMI</p>
-                    <p className="text-xl font-bold text-indigo-400">{formatCurrency(Math.round(emi))}</p>
+                <div className="p-4 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <p className="text-xs text-mono-500">Monthly EMI</p>
+                    <p className="text-xl font-bold text-indigo-600">{formatCurrency(Math.round(emi))}</p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg text-center">
-                    <p className="text-xs text-slate-400">Total Repayment</p>
-                    <p className="text-xl font-bold text-white">{formatCurrency(Math.round(totalRepayment))}</p>
+                <div className="p-4 bg-mono-100 rounded-xl text-center border border-mono-200">
+                    <p className="text-xs text-mono-500">Total Repayment</p>
+                    <p className="text-xl font-bold text-mono-900">{formatCurrency(Math.round(totalRepayment))}</p>
                 </div>
             </div>
 
-            <div className="p-4 bg-indigo-900/30 rounded-lg border border-indigo-500/30">
+            <div className="p-4 bg-mono-900 rounded-xl">
                 <div className="flex items-center space-x-2 mb-2">
-                    <GraduationCap className="w-5 h-5 text-indigo-400" />
+                    <GraduationCap className="w-5 h-5 text-white" />
                     <span className="font-semibold text-white">Tax Benefit (Section 80E)</span>
                 </div>
-                <p className="text-slate-300 text-sm">
+                <p className="text-mono-300 text-sm">
                     You can claim tax deduction on the entire interest paid (no upper limit) for up to 8 years from the start of repayment.
                     Potential tax savings: <span className="text-indigo-400 font-bold">{formatCurrency(Math.round((totalRepayment - principalAfterMoratorium) * 0.3))}</span> (at 30% tax bracket)
                 </p>
@@ -597,25 +597,33 @@ function ToolModal({ tool, isOpen, onClose }: { tool: Tool | null; isOpen: boole
             {isOpen && (
                 <>
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50" onClick={onClose} />
-                    <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="fixed inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-3xl md:max-h-[90vh] overflow-y-auto bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50">
-                        <div className={`sticky top-0 p-6 border-b border-slate-700 bg-gradient-to-r ${colorMap[tool.color] || colorMap.blue}`}>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                    <div className="p-2 bg-white/10 rounded-lg"><tool.icon className="w-6 h-6 text-white" /></div>
-                                    <div>
-                                        <h2 className="text-xl font-bold text-white">{tool.name}</h2>
-                                        <p className="text-sm text-white/70">{tool.desc}</p>
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]" onClick={onClose} />
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }} 
+                            animate={{ opacity: 1, scale: 1 }} 
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-white rounded-[24px] shadow-2xl border border-mono-200 pointer-events-auto"
+                        >
+                            <div className="sticky top-0 p-5 border-b border-mono-200 bg-white/95 backdrop-blur-sm rounded-t-[24px]">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-3">
+                                        <div className={`p-2.5 rounded-xl bg-${tool.color}-500/20`}>
+                                            <tool.icon className={`w-5 h-5 text-${tool.color}-600`} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-lg font-bold text-mono-900">{tool.name}</h2>
+                                            <p className="text-sm text-mono-500">{tool.desc}</p>
+                                        </div>
                                     </div>
+                                    <button onClick={onClose} className="p-2 hover:bg-mono-200 rounded-lg transition-colors">
+                                        <X className="w-5 h-5 text-mono-600" />
+                                    </button>
                                 </div>
-                                <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
-                                    <X className="w-5 h-5 text-white" />
-                                </button>
                             </div>
-                        </div>
-                        <div className="p-6">{getCalculatorComponent()}</div>
-                    </motion.div>
+                            <div className="p-5">{getCalculatorComponent()}</div>
+                        </motion.div>
+                    </div>
                 </>
             )}
         </AnimatePresence>
@@ -645,13 +653,13 @@ export default function ToolsPage() {
             <div className="space-y-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-white">Financial Toolkit</h1>
-                        <p className="text-slate-400">Calculators and utilities to optimize your finances</p>
+                        <h1 className="text-2xl font-bold text-mono-900">Financial Toolkit</h1>
+                        <p className="text-mono-500">Calculators and utilities to optimize your finances</p>
                     </div>
-                    <div className="flex space-x-2 bg-slate-800/50 p-1 rounded-lg border border-slate-700">
+                    <div className="flex space-x-2 bg-mono-200 p-1 rounded-lg border border-mono-300">
                         {['all', 'tax', 'loans', 'planning'].map((cat) => (
                             <button key={cat} onClick={() => setActiveCategory(cat as any)}
-                                className={`px-4 py-1.5 rounded-md text-xs font-medium capitalize transition-all ${activeCategory === cat ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}>
+                                className={`px-4 py-1.5 rounded-md text-xs font-medium capitalize transition-all ${activeCategory === cat ? 'bg-mono-900 text-white shadow-sm' : 'text-mono-600 hover:text-mono-900'}`}>
                                 {cat}
                             </button>
                         ))}
@@ -661,18 +669,18 @@ export default function ToolsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredTools.map((tool, idx) => (
                         <motion.div key={tool.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.05 }}
-                            className="glass-card p-6 hover:border-primary-500/50 hover:bg-slate-800/80 transition-all cursor-pointer group relative overflow-hidden"
+                            className="glass-card p-6 hover:border-mono-400 transition-all cursor-pointer group relative overflow-hidden"
                             onClick={() => handleToolClick(tool)}>
                             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <tool.icon className={`w-24 h-24 text-${tool.color}-500`} />
                             </div>
                             <div className="relative z-10">
-                                <div className={`w-12 h-12 rounded-xl mb-4 flex items-center justify-center bg-${tool.color}-500/20 text-${tool.color}-400 group-hover:scale-110 transition-transform`}>
+                                <div className={`w-12 h-12 rounded-xl mb-4 flex items-center justify-center bg-${tool.color}-500/20 text-${tool.color}-500 group-hover:scale-110 transition-transform`}>
                                     <tool.icon className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-primary-400 transition-colors">{tool.name}</h3>
-                                <p className="text-sm text-slate-400 mb-4 h-10">{tool.desc}</p>
-                                <div className="flex items-center text-xs font-medium text-slate-500 group-hover:text-primary-400 transition-colors">
+                                <h3 className="text-lg font-bold text-mono-900 mb-2 group-hover:text-mono-700 transition-colors">{tool.name}</h3>
+                                <p className="text-sm text-mono-600 mb-4 h-10">{tool.desc}</p>
+                                <div className="flex items-center text-xs font-medium text-mono-500 group-hover:text-mono-700 transition-colors">
                                     Launch Tool <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
@@ -680,13 +688,13 @@ export default function ToolsPage() {
                     ))}
                 </div>
 
-                <div className="glass-card p-6 bg-gradient-to-r from-blue-900/50 to-purple-900/50 border border-blue-500/30">
+                <div className="onyx-card p-6">
                     <div className="flex items-start space-x-4">
-                        <div className="p-3 bg-blue-500/20 rounded-full text-blue-400"><Briefcase className="w-6 h-6" /></div>
+                        <div className="p-3 bg-white/10 rounded-full text-white"><Briefcase className="w-6 h-6" /></div>
                         <div>
                             <h3 className="text-lg font-bold text-white mb-1">Need Personalized Advice?</h3>
-                            <p className="text-sm text-slate-300 mb-3">Our AI Financial Coach can guide you through these tools step-by-step based on your specific situation.</p>
-                            <a href="/dashboard/chat" className="text-xs font-bold text-blue-400 hover:text-blue-300">Start a chat &rarr;</a>
+                            <p className="text-sm text-mono-300 mb-3">Our AI Financial Coach can guide you through these tools step-by-step based on your specific situation.</p>
+                            <a href="/dashboard/chat" className="text-xs font-bold text-green-400 hover:text-green-300">Start a chat &rarr;</a>
                         </div>
                     </div>
                 </div>

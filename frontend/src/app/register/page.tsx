@@ -48,11 +48,11 @@ export default function RegisterPage() {
     }
 
     return (
-        <main className="min-h-screen flex items-center justify-center px-4 py-8">
-            {/* Background Effects */}
+        <main className="min-h-screen flex items-center justify-center px-4 py-8 bg-mono-50">
+            {/* Subtle Background Pattern */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl" />
-                <div className="absolute -bottom-1/4 -left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+                <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-mono-200/40 rounded-full blur-3xl" />
+                <div className="absolute -bottom-1/4 -left-1/4 w-96 h-96 bg-mono-200/40 rounded-full blur-3xl" />
             </div>
 
             <motion.div
@@ -64,26 +64,26 @@ export default function RegisterPage() {
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center space-x-2">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-cyan-500 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-mono-950 flex items-center justify-center">
                             <Sparkles className="w-7 h-7 text-white" />
                         </div>
-                        <span className="text-2xl font-display font-bold text-white">FinBuddy</span>
+                        <span className="text-2xl font-display font-bold text-mono-900">FinBuddy</span>
                     </Link>
                 </div>
 
                 {/* Register Card */}
                 <div className="glass-card p-8">
-                    <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
-                    <p className="text-slate-400 mb-8">Start your financial journey with FinBuddy</p>
+                    <h1 className="text-2xl font-bold text-mono-900 mb-2">Create Account</h1>
+                    <p className="text-mono-500 mb-8">Start your financial journey with FinBuddy</p>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                         {/* Full Name */}
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                            <label className="block text-sm font-medium text-mono-600 mb-2">
                                 Full Name
                             </label>
                             <div className="relative">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-mono-400" />
                                 <input
                                     type="text"
                                     {...register('full_name', { required: 'Name is required' })}
@@ -92,17 +92,17 @@ export default function RegisterPage() {
                                 />
                             </div>
                             {errors.full_name && (
-                                <p className="text-red-400 text-sm mt-1">{errors.full_name.message}</p>
+                                <p className="text-red-500 text-sm mt-1">{errors.full_name.message}</p>
                             )}
                         </div>
 
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                            <label className="block text-sm font-medium text-mono-600 mb-2">
                                 Email
                             </label>
                             <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-mono-400" />
                                 <input
                                     type="email"
                                     {...register('email', {
@@ -117,17 +117,17 @@ export default function RegisterPage() {
                                 />
                             </div>
                             {errors.email && (
-                                <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
+                                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
                             )}
                         </div>
 
                         {/* Password */}
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                            <label className="block text-sm font-medium text-mono-600 mb-2">
                                 Password
                             </label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-mono-400" />
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     {...register('password', {
@@ -143,23 +143,23 @@ export default function RegisterPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-mono-400 hover:text-mono-600 transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
                             </div>
                             {errors.password && (
-                                <p className="text-red-400 text-sm mt-1">{errors.password.message}</p>
+                                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
                             )}
                         </div>
 
                         {/* Confirm Password */}
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                            <label className="block text-sm font-medium text-mono-600 mb-2">
                                 Confirm Password
                             </label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-mono-400" />
                                 <input
                                     type={showConfirmPassword ? 'text' : 'password'}
                                     {...register('confirmPassword', {
@@ -173,13 +173,13 @@ export default function RegisterPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-mono-400 hover:text-mono-600 transition-colors"
                                 >
                                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
                             </div>
                             {errors.confirmPassword && (
-                                <p className="text-red-400 text-sm mt-1">{errors.confirmPassword.message}</p>
+                                <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
                             )}
                         </div>
 
@@ -216,9 +216,9 @@ export default function RegisterPage() {
                     </form>
 
                     {/* Login Link */}
-                    <p className="text-center text-slate-400 mt-6">
+                    <p className="text-center text-mono-500 mt-6">
                         Already have an account?{' '}
-                        <Link href="/login" className="text-primary-400 hover:text-primary-300 font-medium">
+                        <Link href="/login" className="text-mono-900 hover:text-mono-700 font-medium transition-colors">
                             Sign in
                         </Link>
                     </p>
