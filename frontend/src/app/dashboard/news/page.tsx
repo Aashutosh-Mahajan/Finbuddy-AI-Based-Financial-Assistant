@@ -122,8 +122,8 @@ export default function NewsPage() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-white">Market Intelligence</h1>
-                        <p className="text-slate-400">Curated financial news and sentiment analysis</p>
+                        <h1 className="text-2xl font-bold text-mono-900">Market Intelligence</h1>
+                        <p className="text-mono-500">Curated financial news and sentiment analysis</p>
                     </div>
 
                     <div className="flex space-x-2 overflow-x-auto pb-2 md:pb-0">
@@ -132,8 +132,8 @@ export default function NewsPage() {
                                 key={cat}
                                 onClick={() => setFilter(cat as any)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium capitalize transition-all ${filter === cat
-                                    ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/25'
-                                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                                    ? 'bg-mono-900 text-white shadow-lg'
+                                    : 'bg-mono-200 text-mono-600 hover:text-mono-900 hover:bg-mono-300'
                                     }`}
                             >
                                 {cat}
@@ -217,29 +217,29 @@ export default function NewsPage() {
                             </div>
 
                             <div className="p-5 flex-1 flex flex-col">
-                                <div className="flex items-center space-x-2 mb-3 text-xs text-slate-400">
-                                    <span className="text-primary-400 font-medium uppercase">{news.source}</span>
+                                <div className="flex items-center space-x-2 mb-3 text-xs text-mono-500">
+                                    <span className="text-mono-700 font-medium uppercase">{news.source}</span>
                                     <span>•</span>
                                     <span>{formatDate(news.date)}</span>
                                 </div>
 
-                                <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-primary-400 transition-colors">
+                                <h3 className="text-lg font-bold text-mono-900 mb-2 line-clamp-2 group-hover:text-mono-700 transition-colors">
                                     {news.title}
                                 </h3>
 
-                                <p className="text-sm text-slate-400 mb-4 line-clamp-3 flex-1">
+                                <p className="text-sm text-mono-600 mb-4 line-clamp-3 flex-1">
                                     {news.summary}
                                 </p>
 
-                                <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-700/50 mb-4">
-                                    <p className="text-xs text-slate-300">
-                                        <span className="text-primary-400 font-bold">AI Insight:</span> {news.impact}
+                                <div className="p-3 bg-mono-100 rounded-lg border border-mono-200 mb-4">
+                                    <p className="text-xs text-mono-700">
+                                        <span className="text-mono-900 font-bold">AI Insight:</span> {news.impact}
                                     </p>
                                 </div>
 
-                                <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
+                                <div className="flex items-center justify-between pt-4 border-t border-mono-200">
                                     <button 
-                                        className="text-slate-400 hover:text-white transition-colors"
+                                        className="text-mono-400 hover:text-mono-700 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             if (navigator.share) {
@@ -264,13 +264,13 @@ export default function NewsPage() {
                                         }}
                                         className={`flex items-center text-sm font-medium transition-colors ${
                                             news.url 
-                                                ? 'text-primary-400 hover:text-primary-300 cursor-pointer' 
-                                                : 'text-slate-500 cursor-not-allowed'
+                                                ? 'text-mono-700 hover:text-mono-900 cursor-pointer' 
+                                                : 'text-mono-400 cursor-not-allowed'
                                         }`}
                                     >
                                         Read Full Story <ExternalLink className="w-4 h-4 ml-1" />
                                     </a>
-                                    <button className="text-slate-400 hover:text-white transition-colors">
+                                    <button className="text-mono-400 hover:text-mono-700 transition-colors">
                                         <Bookmark className="w-5 h-5" />
                                     </button>
                                 </div>
@@ -282,20 +282,20 @@ export default function NewsPage() {
                 {/* Loading State */}
                 {isLoading && (
                     <div className="flex items-center justify-center py-12">
-                        <Loader2 className="w-8 h-8 animate-spin text-primary-400" />
-                        <span className="ml-3 text-slate-400">Fetching latest news...</span>
+                        <Loader2 className="w-8 h-8 animate-spin text-mono-500" />
+                        <span className="ml-3 text-mono-500">Fetching latest news...</span>
                     </div>
                 )}
                 
                 {/* Empty State */}
                 {!isLoading && filteredNews.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <Newspaper className="w-16 h-16 text-slate-600 mb-4" />
-                        <h3 className="text-lg font-semibold text-white mb-2">No News Available</h3>
-                        <p className="text-slate-400 mb-4">We couldn't find any news articles at the moment.</p>
+                        <Newspaper className="w-16 h-16 text-mono-400 mb-4" />
+                        <h3 className="text-lg font-semibold text-mono-900 mb-2">No News Available</h3>
+                        <p className="text-mono-500 mb-4">We couldn't find any news articles at the moment.</p>
                         <button
                             onClick={fetchNews}
-                            className="flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                            className="flex items-center px-4 py-2 bg-mono-900 text-white rounded-lg hover:bg-mono-800 transition-colors"
                         >
                             <RefreshCw className="w-4 h-4 mr-2" />
                             Refresh News

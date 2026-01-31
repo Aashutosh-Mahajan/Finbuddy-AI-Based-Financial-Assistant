@@ -143,8 +143,8 @@ export default function ChatPage() {
     return (
         <DashboardLayout>
             <div className="flex h-[calc(100vh-8rem)] gap-6">
-                {/* Sidebar - Conversations */}
-                <div className="hidden lg:block w-72 glass-card p-4 flex flex-col">
+                {/* Sidebar - Conversations - Glass Card */}
+                <div className="hidden lg:flex w-72 glass-card p-4 flex-col">
                     <button
                         onClick={handleNewChat}
                         className="btn-primary w-full mb-4 flex items-center justify-center space-x-2"
@@ -160,17 +160,17 @@ export default function ChatPage() {
                         ]).map((conv: any) => (
                             <button
                                 key={conv.id}
-                                className={`w-full text-left p-3 rounded-xl transition-colors ${currentConversation?.id === conv.id
-                                    ? 'bg-primary-600/20 border border-primary-500/30'
-                                    : 'hover:bg-slate-800/50'
+                                className={`w-full text-left p-3 rounded-xl transition-all duration-300 ${currentConversation?.id === conv.id
+                                    ? 'bg-mono-900 text-white'
+                                    : 'hover:bg-mono-100 text-mono-700'
                                     }`}
                                 onClick={() => dispatch(setCurrentConversation(conv))}
                             >
                                 <div className="flex items-center space-x-3">
-                                    <MessageCircle className="w-4 h-4 text-slate-400" />
+                                    <MessageCircle className={`w-4 h-4 ${currentConversation?.id === conv.id ? 'text-white' : 'text-mono-500'}`} />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-white truncate">{conv.title}</p>
-                                        <p className="text-xs text-slate-500">{formatRelativeTime(conv.created_at)}</p>
+                                        <p className="text-sm font-medium truncate">{conv.title}</p>
+                                        <p className={`text-xs ${currentConversation?.id === conv.id ? 'text-white/60' : 'text-mono-500'}`}>{formatRelativeTime(conv.created_at)}</p>
                                     </div>
                                 </div>
                             </button>
@@ -178,23 +178,23 @@ export default function ChatPage() {
                     </div>
                 </div>
 
-                {/* Main Chat Area */}
+                {/* Main Chat Area - Glass Card */}
                 <div className="flex-1 glass-card flex flex-col">
                     {/* Chat Header */}
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50">
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-mono-200/50">
                         <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-cyan-500 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-xl bg-mono-900 flex items-center justify-center">
                                 <Sparkles className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <h2 className="font-semibold text-white">AI Financial Coach</h2>
-                                <p className="text-xs text-green-400 flex items-center">
-                                    <span className="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
+                                <h2 className="font-semibold text-mono-900 tracking-tight">AI Financial Coach</h2>
+                                <p className="text-xs text-mono-500 flex items-center font-medium">
+                                    <span className="w-2 h-2 bg-mono-900 rounded-full mr-1"></span>
                                     Online • GPT-5.1
                                 </p>
                             </div>
                         </div>
-                        <button className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/50">
+                        <button className="p-2.5 text-mono-500 hover:text-mono-900 rounded-xl hover:bg-mono-100 transition-all duration-300">
                             <MoreVertical className="w-5 h-5" />
                         </button>
                     </div>
@@ -209,14 +209,14 @@ export default function ChatPage() {
                                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div className={`flex items-start space-x-3 max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${message.role === 'user'
-                                        ? 'bg-primary-600'
-                                        : 'bg-gradient-to-br from-purple-500 to-cyan-500'
+                                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${message.role === 'user'
+                                        ? 'bg-mono-900'
+                                        : 'bg-mono-200'
                                         }`}>
                                         {message.role === 'user' ? (
                                             <User className="w-4 h-4 text-white" />
                                         ) : (
-                                            <Bot className="w-4 h-4 text-white" />
+                                            <Bot className="w-4 h-4 text-mono-700" />
                                         )}
                                     </div>
                                     <div className={message.role === 'user' ? 'chat-message-user' : 'chat-message-assistant'}>
@@ -229,7 +229,7 @@ export default function ChatPage() {
                                                 </p>
                                             ))}
                                         </div>
-                                        <p className="text-xs text-slate-500 mt-2">
+                                        <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-white/60' : 'text-mono-400'}`}>
                                             {formatRelativeTime(message.timestamp)}
                                         </p>
                                     </div>
@@ -246,14 +246,14 @@ export default function ChatPage() {
                                     exit={{ opacity: 0, y: -10 }}
                                     className="flex items-center space-x-3"
                                 >
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
-                                        <Bot className="w-4 h-4 text-white" />
+                                    <div className="w-8 h-8 rounded-xl bg-mono-200 flex items-center justify-center">
+                                        <Bot className="w-4 h-4 text-mono-700" />
                                     </div>
                                     <div className="chat-message-assistant">
                                         <div className="flex space-x-1">
-                                            <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                            <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                            <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                            <span className="w-2 h-2 bg-mono-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                            <span className="w-2 h-2 bg-mono-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                            <span className="w-2 h-2 bg-mono-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                         </div>
                                     </div>
                                 </motion.div>
@@ -266,13 +266,13 @@ export default function ChatPage() {
                     {/* Quick Prompts */}
                     {displayMessages.length <= 1 && (
                         <div className="px-6 pb-4">
-                            <p className="text-sm text-slate-400 mb-3">Quick prompts:</p>
+                            <p className="text-sm text-mono-500 mb-3 font-medium">Quick prompts:</p>
                             <div className="flex flex-wrap gap-2">
                                 {quickPrompts.map((prompt, index) => (
                                     <button
                                         key={index}
                                         onClick={() => handleQuickPrompt(prompt)}
-                                        className="px-3 py-2 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-300 transition-colors"
+                                        className="px-3 py-2 bg-mono-100 hover:bg-mono-200 border border-mono-200 rounded-xl text-sm text-mono-700 transition-all duration-300 font-medium"
                                     >
                                         {prompt}
                                     </button>
@@ -282,9 +282,9 @@ export default function ChatPage() {
                     )}
 
                     {/* Input Area */}
-                    <div className="p-4 border-t border-slate-700/50">
+                    <div className="p-4 border-t border-mono-200/50">
                         <div className="flex items-end space-x-3">
-                            <button className="p-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-colors">
+                            <button className="p-3 text-mono-500 hover:text-mono-900 hover:bg-mono-100 rounded-xl transition-all duration-300">
                                 <Paperclip className="w-5 h-5" />
                             </button>
 
@@ -296,12 +296,12 @@ export default function ChatPage() {
                                     onKeyDown={handleKeyDown}
                                     placeholder="Ask me anything about your finances..."
                                     rows={1}
-                                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-primary-500 resize-none"
+                                    className="w-full px-4 py-3 bg-mono-100/50 border border-mono-200 rounded-xl text-mono-900 placeholder:text-mono-400 focus:outline-none focus:border-mono-400 focus:bg-white resize-none transition-all duration-300"
                                     style={{ minHeight: '48px', maxHeight: '120px' }}
                                 />
                             </div>
 
-                            <button className="p-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-colors">
+                            <button className="p-3 text-mono-500 hover:text-mono-900 hover:bg-mono-100 rounded-xl transition-all duration-300">
                                 <Mic className="w-5 h-5" />
                             </button>
 

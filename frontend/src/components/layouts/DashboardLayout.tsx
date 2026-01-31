@@ -49,11 +49,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
     const handleLogout = () => {
         dispatch(logout())
-        window.location.href = '/login'
+        window.location.href = '/'
     }
 
     return (
-        <div className="min-h-screen bg-dark-400 flex">
+        <div className="min-h-screen flex">
             {/* Mobile sidebar backdrop */}
             <AnimatePresence>
                 {sidebarOpen && (
@@ -62,30 +62,30 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setSidebarOpen(false)}
-                        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+                        className="fixed inset-0 z-40 bg-mono-900/20 backdrop-blur-sm lg:hidden"
                     />
                 )}
             </AnimatePresence>
 
-            {/* Sidebar */}
+            {/* Sidebar - Floating Glass */}
             <aside
                 className={cn(
-                    'fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 transform transition-transform duration-300 lg:translate-x-0 lg:static',
-                    sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                    'fixed inset-y-4 left-4 z-50 w-72 sidebar-glass transform transition-transform duration-300 lg:translate-x-0',
+                    sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
                 )}
             >
                 <div className="flex flex-col h-full">
                     {/* Logo */}
-                    <div className="flex items-center justify-between h-16 px-6 border-b border-slate-800">
+                    <div className="flex items-center justify-between h-16 px-6 border-b border-mono-200/50">
                         <Link href="/dashboard" className="flex items-center space-x-2">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-cyan-500 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-xl bg-mono-900 flex items-center justify-center">
                                 <Sparkles className="w-6 h-6 text-white" />
                             </div>
-                            <span className="text-xl font-display font-bold text-white">FinBuddy</span>
+                            <span className="text-xl font-display font-bold text-mono-900 tracking-tight">FinBuddy</span>
                         </Link>
                         <button
                             onClick={() => setSidebarOpen(false)}
-                            className="lg:hidden text-slate-400 hover:text-white"
+                            className="lg:hidden text-mono-500 hover:text-mono-900 transition-all duration-300"
                         >
                             <X className="w-6 h-6" />
                         </button>
@@ -104,54 +104,54 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                         isActive && 'nav-link-active'
                                     )}
                                 >
-                                    <item.icon className={cn('w-5 h-5', isActive ? 'text-primary-400' : 'text-slate-400')} />
+                                    <item.icon className={cn('w-5 h-5', isActive ? 'text-white' : 'text-mono-500')} />
                                     <span>{item.name}</span>
                                 </Link>
                             )
                         })}
                     </nav>
 
-                    {/* AI Assistant Quick Access */}
-                    <div className="p-4 mx-4 mb-4 rounded-xl bg-gradient-to-br from-primary-600/20 to-cyan-600/20 border border-primary-500/30">
+                    {/* AI Assistant Quick Access - Onyx Card */}
+                    <div className="p-4 mx-4 mb-4 onyx-card">
                         <div className="flex items-center space-x-3 mb-3">
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-cyan-500 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                                 <MessageCircle className="w-5 h-5 text-white" />
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-white">AI Assistant</p>
-                                <p className="text-xs text-slate-400">Online & Ready</p>
+                                <p className="text-xs text-white/50">Online & Ready</p>
                             </div>
                         </div>
                         <Link
                             href="/dashboard/chat"
-                            className="btn-primary w-full text-sm py-2"
+                            className="block w-full text-center text-sm py-2.5 bg-white text-mono-900 font-medium rounded-xl hover:bg-mono-100 transition-all duration-300"
                         >
                             Start Chat
                         </Link>
                     </div>
 
-                    {/* User */}
-                    <div className="p-4 border-t border-slate-800">
+                    {/* User / Logout */}
+                    <div className="p-4 border-t border-mono-200/50">
                         <button
                             onClick={handleLogout}
-                            className="flex items-center space-x-3 w-full px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-colors"
+                            className="flex items-center space-x-3 w-full px-4 py-3 text-mono-500 hover:text-mono-900 hover:bg-mono-100 rounded-xl transition-all duration-300"
                         >
                             <LogOut className="w-5 h-5" />
-                            <span>Logout</span>
+                            <span className="font-medium">Logout</span>
                         </button>
                     </div>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col min-h-screen lg:pl-0">
-                {/* Top Bar */}
-                <header className="sticky top-0 z-30 h-16 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800">
-                    <div className="flex items-center justify-between h-full px-4 lg:px-8">
+            <div className="flex-1 flex flex-col min-h-screen lg:ml-80">
+                {/* Top Bar - Glass */}
+                <header className="sticky top-4 z-30 mx-4 lg:mx-8 mt-4 glass-card">
+                    <div className="flex items-center justify-between h-16 px-6">
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={() => setSidebarOpen(true)}
-                                className="lg:hidden text-slate-400 hover:text-white"
+                                className="lg:hidden text-mono-500 hover:text-mono-900 transition-all duration-300"
                             >
                                 <Menu className="w-6 h-6" />
                             </button>
@@ -159,11 +159,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                             {/* Search */}
                             <div className="hidden md:flex items-center">
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-mono-400" />
                                     <input
                                         type="text"
                                         placeholder="Search transactions, investments..."
-                                        className="w-80 pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-primary-500"
+                                        className="w-80 pl-10 pr-4 py-2.5 bg-mono-100/50 border border-mono-200 rounded-xl text-sm text-mono-900 placeholder:text-mono-400 focus:outline-none focus:border-mono-400 focus:bg-white transition-all duration-300"
                                     />
                                 </div>
                             </div>
@@ -171,24 +171,24 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
                         <div className="flex items-center space-x-4">
                             {/* Notifications */}
-                            <button className="relative p-2 text-slate-400 hover:text-white transition-colors">
+                            <button className="relative p-2.5 text-mono-500 hover:text-mono-900 hover:bg-mono-100 rounded-xl transition-all duration-300">
                                 <Bell className="w-5 h-5" />
-                                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                                <span className="absolute top-2 right-2 w-2 h-2 bg-mono-900 rounded-full" />
                             </button>
 
                             {/* User Menu */}
                             <div className="relative">
                                 <button
                                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                                    className="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-800/50 transition-colors"
+                                    className="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-mono-100 transition-all duration-300"
                                 >
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-cyan-500 flex items-center justify-center">
+                                    <div className="w-8 h-8 rounded-xl bg-mono-900 flex items-center justify-center">
                                         <User className="w-4 h-4 text-white" />
                                     </div>
-                                    <span className="hidden md:block text-sm text-white">
+                                    <span className="hidden md:block text-sm text-mono-900 font-medium">
                                         {user?.full_name || 'User'}
                                     </span>
-                                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                                    <ChevronDown className="w-4 h-4 text-mono-400" />
                                 </button>
 
                                 <AnimatePresence>
@@ -201,13 +201,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                         >
                                             <Link
                                                 href="/dashboard/settings"
-                                                className="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-lg"
+                                                className="block px-4 py-2.5 text-sm text-mono-700 hover:bg-mono-100 rounded-xl transition-all duration-300 font-medium"
                                             >
                                                 Settings
                                             </Link>
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-slate-800 rounded-lg"
+                                                className="w-full text-left px-4 py-2.5 text-sm text-mono-700 hover:bg-mono-100 rounded-xl transition-all duration-300 font-medium"
                                             >
                                                 Logout
                                             </button>

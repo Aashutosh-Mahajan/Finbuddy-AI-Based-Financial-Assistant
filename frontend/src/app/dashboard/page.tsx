@@ -43,10 +43,10 @@ export default function DashboardPage() {
     const healthScore = Math.min(100, Math.max(0, Math.round(savingsRate * 2 + 40))) // Scale from 40-100
 
     const getHealthLabel = (score: number) => {
-        if (score >= 80) return { label: 'Excellent', color: 'text-green-400' }
-        if (score >= 60) return { label: 'Good', color: 'text-green-400' }
-        if (score >= 40) return { label: 'Fair', color: 'text-yellow-400' }
-        return { label: 'Needs Work', color: 'text-red-400' }
+        if (score >= 80) return { label: 'Excellent', color: 'text-mono-900' }
+        if (score >= 60) return { label: 'Good', color: 'text-mono-700' }
+        if (score >= 40) return { label: 'Fair', color: 'text-mono-500' }
+        return { label: 'Needs Work', color: 'text-mono-400' }
     }
 
     const healthInfo = getHealthLabel(healthScore)
@@ -65,8 +65,8 @@ export default function DashboardPage() {
                 data: trendsArray.length > 0 
                     ? trendsArray.map((t: any) => t.income || 0)
                     : (summary ? [summary.monthly_income] : [0]),
-                borderColor: 'rgb(34, 197, 94)',
-                backgroundColor: 'rgba(34, 197, 94, 0.5)',
+                borderColor: '#111111',
+                backgroundColor: 'rgba(17, 17, 17, 0.1)',
                 tension: 0.4,
             },
             {
@@ -74,8 +74,8 @@ export default function DashboardPage() {
                 data: trendsArray.length > 0
                     ? trendsArray.map((t: any) => t.expenses || 0)
                     : (summary ? [summary.monthly_expenses] : [0]),
-                borderColor: 'rgb(239, 68, 68)',
-                backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                borderColor: '#A3A3A3',
+                backgroundColor: 'rgba(163, 163, 163, 0.1)',
                 tension: 0.4,
             }
         ],
@@ -84,17 +84,17 @@ export default function DashboardPage() {
     const chartOptions = {
         responsive: true,
         plugins: {
-            legend: { position: 'top' as const, labels: { color: '#94a3b8' } },
+            legend: { position: 'top' as const, labels: { color: '#6B6B6B', font: { weight: 500 } } },
         },
         scales: {
-            x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-            y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+            x: { grid: { color: 'rgba(0, 0, 0, 0.05)' }, ticks: { color: '#6B6B6B' } },
+            y: { grid: { color: 'rgba(0, 0, 0, 0.05)' }, ticks: { color: '#6B6B6B' } },
         }
     }
 
     // Get category icon based on transaction category
     const getCategoryIcon = (category: string) => {
-        return <CreditCard className="w-5 h-5 text-slate-400" />
+        return <CreditCard className="w-5 h-5 text-mono-500" />
     }
 
     return (
@@ -103,21 +103,21 @@ export default function DashboardPage() {
                 {/* Welcome Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-white">
-                            Welcome back, <span className="text-primary-400">{user?.full_name || 'User'}</span> 👋
+                        <h1 className="text-2xl font-bold text-mono-900 tracking-tight">
+                            Welcome back, <span className="text-mono-700">{user?.full_name || 'User'}</span> 👋
                         </h1>
-                        <p className="text-slate-400">Here's your financial health overview for today.</p>
+                        <p className="text-mono-500 font-medium">Here's your financial health overview for today.</p>
                     </div>
                     <div className="flex items-center space-x-3">
                         {isLoading && (
-                            <div className="flex items-center text-slate-400 text-sm">
+                            <div className="flex items-center text-mono-500 text-sm font-medium">
                                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
                                 Loading...
                             </div>
                         )}
-                        <div className="bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700 flex items-center space-x-2">
-                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            <span className="text-xs text-slate-300">Market Open</span>
+                        <div className="glass-card px-4 py-2 flex items-center space-x-2">
+                            <span className="w-2 h-2 rounded-full bg-mono-900 animate-pulse"></span>
+                            <span className="text-xs text-mono-700 font-medium">Market Open</span>
                         </div>
                     </div>
                 </div>
@@ -125,19 +125,19 @@ export default function DashboardPage() {
                 {/* Bento Grid Layout */}
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-                    {/* Financial Health Score (Large Square) */}
+                    {/* Financial Health Score - Onyx Card */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.1 }}
-                        className="md:col-span-1 lg:row-span-2 glass-card p-6 flex flex-col items-center justify-center bg-gradient-to-b from-slate-800 to-slate-900 border-t-4 border-t-primary-500"
+                        className="md:col-span-1 lg:row-span-2 onyx-card p-6 flex flex-col items-center justify-center"
                     >
-                        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">Financial Score</h3>
+                        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-6">Financial Score</h3>
                         <div className="relative w-40 h-40 flex items-center justify-center">
                             <svg className="w-full h-full transform -rotate-90">
-                                <circle cx="80" cy="80" r="70" stroke="#1e293b" strokeWidth="10" fill="transparent" />
+                                <circle cx="80" cy="80" r="70" stroke="rgba(255,255,255,0.1)" strokeWidth="10" fill="transparent" />
                                 <circle
-                                    cx="80" cy="80" r="70" stroke="#8b5cf6" strokeWidth="10"
+                                    cx="80" cy="80" r="70" stroke="#FFFFFF" strokeWidth="10"
                                     fill="transparent"
                                     strokeDasharray="440"
                                     strokeDashoffset={440 - (440 * healthScore) / 100}
@@ -146,17 +146,17 @@ export default function DashboardPage() {
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <span className="text-4xl font-bold text-white">{healthScore}</span>
-                                <span className={`text-xs font-medium pt-1 ${healthInfo.color}`}>{healthInfo.label}</span>
+                                <span className="text-xs font-medium pt-1 text-white/70">{healthInfo.label}</span>
                             </div>
                         </div>
-                        <p className="text-xs text-center text-slate-500 mt-6 px-4">
+                        <p className="text-xs text-center text-white/50 mt-6 px-4">
                             {summary?.savings_rate
                                 ? `Savings rate: ${summary.savings_rate.toFixed(1)}%`
                                 : 'Add transactions to calculate your score'}
                         </p>
                     </motion.div>
 
-                    {/* Income vs Expenses Chart */}
+                    {/* Income vs Expenses Chart - Glass Card */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -164,14 +164,14 @@ export default function DashboardPage() {
                         className="md:col-span-2 lg:col-span-2 glass-card p-6"
                     >
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-bold text-white">Cash Flow</h3>
-                            <span className="text-xs text-slate-400">This Month</span>
+                            <h3 className="text-lg font-bold text-mono-900 tracking-tight">Cash Flow</h3>
+                            <span className="text-xs text-mono-500 font-medium">This Month</span>
                         </div>
                         <div className="h-48">
                             {summary ? (
                                 <Line data={spendingData} options={{ ...chartOptions, maintainAspectRatio: false }} />
                             ) : (
-                                <div className="h-full flex items-center justify-center text-slate-500">
+                                <div className="h-full flex items-center justify-center text-mono-500 font-medium">
                                     No data yet - add transactions to see trends
                                 </div>
                             )}
@@ -184,15 +184,15 @@ export default function DashboardPage() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="glass-card p-4 flex flex-col justify-between h-full bg-gradient-to-br from-green-900/20 to-slate-900 border-l-4 border-l-green-500"
+                            className="glass-card p-4 flex flex-col justify-between h-full border-l-4 border-l-mono-900"
                         >
                             <div>
-                                <p className="text-xs text-slate-400 uppercase">Total Income</p>
-                                <h4 className="text-xl font-bold text-white mt-1">
+                                <p className="text-xs text-mono-500 uppercase font-semibold tracking-wide">Total Income</p>
+                                <h4 className="text-xl font-bold text-mono-900 mt-1 tracking-tight">
                                     {formatCurrency(summary?.monthly_income || 0)}
                                 </h4>
                             </div>
-                            <div className="mt-2 text-xs text-green-400 flex items-center">
+                            <div className="mt-2 text-xs text-mono-700 flex items-center font-medium">
                                 <ArrowUpRight className="w-3 h-3 mr-1" /> This month
                             </div>
                         </motion.div>
@@ -201,21 +201,21 @@ export default function DashboardPage() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="glass-card p-4 flex flex-col justify-between h-full bg-gradient-to-br from-red-900/20 to-slate-900 border-l-4 border-l-red-500"
+                            className="glass-card p-4 flex flex-col justify-between h-full border-l-4 border-l-mono-400"
                         >
                             <div>
-                                <p className="text-xs text-slate-400 uppercase">Total Expenses</p>
-                                <h4 className="text-xl font-bold text-white mt-1">
+                                <p className="text-xs text-mono-500 uppercase font-semibold tracking-wide">Total Expenses</p>
+                                <h4 className="text-xl font-bold text-mono-900 mt-1 tracking-tight">
                                     {formatCurrency(summary?.monthly_expenses || 0)}
                                 </h4>
                             </div>
-                            <div className="mt-2 text-xs text-red-400 flex items-center">
+                            <div className="mt-2 text-xs text-mono-500 flex items-center font-medium">
                                 <ArrowDownRight className="w-3 h-3 mr-1" /> This month
                             </div>
                         </motion.div>
                     </div>
 
-                    {/* Recent Activity */}
+                    {/* Recent Activity - Glass Card */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -223,80 +223,68 @@ export default function DashboardPage() {
                         className="md:col-span-2 lg:col-span-2 glass-card p-6"
                     >
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-bold text-white">Recent Activity</h3>
-                            <a href="/dashboard/transactions" className="text-xs text-primary-400 hover:text-primary-300">View All</a>
+                            <h3 className="text-lg font-bold text-mono-900 tracking-tight">Recent Activity</h3>
+                            <a href="/dashboard/transactions" className="text-xs text-mono-700 hover:text-mono-900 font-medium transition-all duration-300">View All</a>
                         </div>
-                        <div className="space-y-4">
+                        <div className="space-y-1">
                             {transactions && transactions.length > 0 ? (
                                 transactions.slice(0, 5).map((tx: any) => (
-                                    <div key={tx.id} className="flex justify-between items-center p-3 hover:bg-slate-800/50 rounded-lg transition-colors cursor-pointer">
+                                    <div key={tx.id} className="flex justify-between items-center p-3 hover:bg-mono-100/50 rounded-xl transition-all duration-300 cursor-pointer table-row">
                                         <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
+                                            <div className="w-10 h-10 rounded-xl bg-mono-100 flex items-center justify-center">
                                                 {getCategoryIcon(tx.category)}
                                             </div>
                                             <div>
-                                                <p className="text-sm font-medium text-white">{tx.merchant || tx.description || 'Transaction'}</p>
-                                                <p className="text-xs text-slate-500">{tx.category} • {formatDate(tx.date || tx.transaction_date)}</p>
+                                                <p className="text-sm font-medium text-mono-900">{tx.merchant || tx.description || 'Transaction'}</p>
+                                                <p className="text-xs text-mono-500">{tx.category} • {formatDate(tx.date || tx.transaction_date)}</p>
                                             </div>
                                         </div>
-                                        <span className={`text-sm font-bold ${tx.type === 'credit' ? 'text-green-400' : 'text-white'}`}>
+                                        <span className={`text-sm font-bold ${tx.type === 'credit' ? 'text-mono-900' : 'text-mono-600'}`}>
                                             {tx.type === 'credit' ? '+' : '-'} {formatCurrency(tx.amount)}
                                         </span>
                                     </div>
                                 ))
                             ) : (
-                                <div className="text-center py-8 text-slate-500">
-                                    <CreditCard className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                                    <p>No transactions yet</p>
-                                    <a href="/dashboard/transactions" className="text-primary-400 text-sm hover:underline">Add your first transaction</a>
+                                <div className="text-center py-8 text-mono-500">
+                                    <CreditCard className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                                    <p className="font-medium">No transactions yet</p>
+                                    <a href="/dashboard/transactions" className="text-mono-700 text-sm hover:underline font-medium">Add your first transaction</a>
                                 </div>
                             )}
                         </div>
                     </motion.div>
 
-                    {/* Smart Alerts */}
+                    {/* Smart Alerts - Onyx Card */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6 }}
-                        className="md:col-span-1 lg:col-span-2 glass-card p-6 relative overflow-hidden"
+                        className="md:col-span-1 lg:col-span-2 onyx-card p-6 relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-5">
-                            <Bell className="w-32 h-32 text-orange-500" />
+                            <Bell className="w-32 h-32 text-white" />
                         </div>
-                        <h3 className="text-lg font-bold text-white mb-4 relative z-10">Smart Alerts</h3>
+                        <h3 className="text-lg font-bold text-white mb-4 relative z-10 tracking-tight">Smart Alerts</h3>
                         <div className="space-y-3 relative z-10">
                             {alerts && alerts.length > 0 ? (
                                 alerts.slice(0, 3).map((alert: any) => (
                                     <div
                                         key={alert.id}
-                                        className={`p-3 rounded-lg flex items-start space-x-3 ${alert.type === 'danger' ? 'bg-red-500/10 border border-red-500/20' :
-                                                alert.type === 'warning' ? 'bg-orange-500/10 border border-orange-500/20' :
-                                                    'bg-blue-500/10 border border-blue-500/20'
-                                            }`}
+                                        className="p-3 rounded-xl flex items-start space-x-3 bg-white/5 border border-white/10"
                                     >
-                                        <Activity className={`w-5 h-5 mt-0.5 ${alert.type === 'danger' ? 'text-red-400' :
-                                                alert.type === 'warning' ? 'text-orange-400' :
-                                                    'text-blue-400'
-                                            }`} />
+                                        <Activity className="w-5 h-5 mt-0.5 text-white/70" />
                                         <div>
-                                            <p className={`text-sm font-medium ${alert.type === 'danger' ? 'text-red-200' :
-                                                    alert.type === 'warning' ? 'text-orange-200' :
-                                                        'text-blue-200'
-                                                }`}>{alert.title}</p>
-                                            <p className={`text-xs ${alert.type === 'danger' ? 'text-red-400/70' :
-                                                    alert.type === 'warning' ? 'text-orange-400/70' :
-                                                        'text-blue-400/70'
-                                                }`}>{alert.message}</p>
+                                            <p className="text-sm font-medium text-white">{alert.title}</p>
+                                            <p className="text-xs text-white/50">{alert.message}</p>
                                         </div>
                                     </div>
                                 ))
                             ) : (
-                                <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg flex items-start space-x-3">
-                                    <TrendingUp className="w-5 h-5 text-green-400 mt-0.5" />
+                                <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-start space-x-3">
+                                    <TrendingUp className="w-5 h-5 text-white/70 mt-0.5" />
                                     <div>
-                                        <p className="text-sm font-medium text-green-200">All Clear!</p>
-                                        <p className="text-xs text-green-400/70">No alerts at this time. Your finances look healthy.</p>
+                                        <p className="text-sm font-medium text-white">All Clear!</p>
+                                        <p className="text-xs text-white/50">No alerts at this time. Your finances look healthy.</p>
                                     </div>
                                 </div>
                             )}

@@ -27,13 +27,13 @@ function TransactionSkeleton() {
     return (
         <div className="animate-pulse">
             {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center px-6 py-4 border-b border-slate-700">
-                    <div className="w-8 h-8 rounded-lg bg-slate-700 mr-3" />
+                <div key={i} className="flex items-center px-6 py-4 border-b border-gray-200">
+                    <div className="w-8 h-8 rounded-lg bg-gray-200 mr-3" />
                     <div className="flex-1">
-                        <div className="h-4 bg-slate-700 rounded w-32 mb-2" />
-                        <div className="h-3 bg-slate-700/50 rounded w-20" />
+                        <div className="h-4 bg-gray-200 rounded w-32 mb-2" />
+                        <div className="h-3 bg-gray-100 rounded w-20" />
                     </div>
-                    <div className="h-4 bg-slate-700 rounded w-20" />
+                    <div className="h-4 bg-gray-200 rounded w-20" />
                 </div>
             ))}
         </div>
@@ -45,11 +45,11 @@ function StatsSkeleton() {
     return (
         <div className="glass-card p-6 animate-pulse">
             <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-slate-700" />
-                <div className="h-4 bg-slate-700 rounded w-16" />
+                <div className="w-12 h-12 rounded-xl bg-gray-200" />
+                <div className="h-4 bg-gray-200 rounded w-16" />
             </div>
-            <div className="h-3 bg-slate-700/50 rounded w-24 mb-2" />
-            <div className="h-6 bg-slate-700 rounded w-32" />
+            <div className="h-3 bg-gray-100 rounded w-24 mb-2" />
+            <div className="h-6 bg-gray-200 rounded w-32" />
         </div>
     )
 }
@@ -100,8 +100,8 @@ export default function TransactionsPage() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-white">Transactions</h1>
-                        <p className="text-slate-400">Manage and track your financial activity</p>
+                        <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
+                        <p className="text-gray-500">Manage and track your financial activity</p>
                     </div>
                     <div className="flex items-center space-x-3">
                         <button className="btn-secondary flex items-center space-x-2">
@@ -137,8 +137,8 @@ export default function TransactionsPage() {
                                     </div>
                                     <span className="text-green-400 text-sm font-medium">This month</span>
                                 </div>
-                                <p className="text-sm text-slate-400">Total Income</p>
-                                <p className="text-2xl font-bold text-white mt-1">
+                                <p className="text-sm text-gray-500">Total Income</p>
+                                <p className="text-2xl font-bold text-gray-900 mt-1">
                                     {formatCurrency(stats?.total_income || 0)}
                                 </p>
                             </motion.div>
@@ -155,8 +155,8 @@ export default function TransactionsPage() {
                             </div>
                             <span className="text-red-400 text-sm font-medium">This month</span>
                         </div>
-                        <p className="text-sm text-slate-400">Total Expenses</p>
-                        <p className="text-2xl font-bold text-white mt-1">
+                        <p className="text-sm text-gray-500">Total Expenses</p>
+                        <p className="text-2xl font-bold text-gray-900 mt-1">
                             {formatCurrency(stats?.total_expenses || 0)}
                         </p>
                     </motion.div>
@@ -173,8 +173,8 @@ export default function TransactionsPage() {
                             </div>
                             <span className="text-blue-400 text-sm font-medium">{stats?.net >= 0 ? 'Healthy' : 'Review'}</span>
                         </div>
-                        <p className="text-sm text-slate-400">Net Savings</p>
-                        <p className="text-2xl font-bold text-white mt-1">
+                        <p className="text-sm text-gray-500">Net Savings</p>
+                        <p className="text-2xl font-bold text-gray-900 mt-1">
                             {formatCurrency(stats?.net || 0)}
                         </p>
                     </motion.div>
@@ -194,7 +194,7 @@ export default function TransactionsPage() {
                                     placeholder="Search transactions..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-9 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-primary-500"
+                                    className="w-full pl-9 pr-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-900"
                                 />
                             </div>
                             <div className="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto">
@@ -203,8 +203,8 @@ export default function TransactionsPage() {
                                         key={cat}
                                         onClick={() => setSelectedCategory(cat)}
                                         className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === cat
-                                            ? 'bg-primary-500 text-white'
-                                            : 'bg-slate-800 text-slate-400 hover:text-white'
+                                            ? 'bg-gray-900 text-white'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
                                             }`}
                                     >
                                         {cat}
@@ -221,23 +221,23 @@ export default function TransactionsPage() {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left">
                                     <thead>
-                                        <tr className="border-b border-slate-700 bg-slate-800/50">
-                                            <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Transaction</th>
-                                            <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Category</th>
-                                            <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Date</th>
-                                            <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Amount</th>
+                                        <tr className="border-b border-gray-200 bg-gray-50">
+                                            <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Transaction</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider text-right">Amount</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-700">
+                                    <tbody className="divide-y divide-gray-100">
                                         {filteredTransactions.length > 0 ? (
                                             filteredTransactions.map((t: any) => (
-                                                <tr key={t.id} className="hover:bg-slate-800/30 transition-colors">
+                                                <tr key={t.id} className="hover:bg-gray-50 transition-colors">
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="flex items-center space-x-3">
-                                                            <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-lg">
+                                                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-lg">
                                                                 {getCategoryIcon(t.category)}
                                                             </div>
-                                                            <span className="font-medium text-white">{t.merchant || t.description || 'Transaction'}</span>
+                                                            <span className="font-medium text-gray-900">{t.merchant || t.description || 'Transaction'}</span>
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -246,10 +246,10 @@ export default function TransactionsPage() {
                                                             {t.category || 'Uncategorized'}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                         {formatDate(t.transaction_date || t.date)}
                                                     </td>
-                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold text-right ${t.transaction_type === 'credit' || t.type === 'credit' ? 'text-green-400' : 'text-slate-200'
+                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold text-right ${t.transaction_type === 'credit' || t.type === 'credit' ? 'text-green-600' : 'text-gray-700'
                                                         }`}>
                                                         {t.transaction_type === 'credit' || t.type === 'credit' ? '+' : '-'}{formatCurrency(t.amount)}
                                                     </td>
@@ -258,9 +258,9 @@ export default function TransactionsPage() {
                                         ) : (
                                             <tr>
                                                 <td colSpan={4} className="px-6 py-12 text-center">
-                                                    <CreditCard className="w-12 h-12 mx-auto mb-3 text-slate-600" />
-                                                    <p className="text-slate-500">No transactions found</p>
-                                                    <p className="text-sm text-slate-600 mt-1">Add your first transaction to get started</p>
+                                                    <CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                                                    <p className="text-gray-600">No transactions found</p>
+                                                    <p className="text-sm text-gray-400 mt-1">Add your first transaction to get started</p>
                                                 </td>
                                             </tr>
                                         )}
@@ -319,15 +319,15 @@ export default function TransactionsPage() {
 
                         {/* Quick Actions */}
                         <div className="glass-card p-6">
-                            <h3 className="text-sm font-semibold text-white mb-4">Quick Actions</h3>
+                            <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick Actions</h3>
                             <div className="grid grid-cols-2 gap-3">
-                                <button className="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-center transition-colors">
-                                    <CreditCard className="w-5 h-5 text-purple-400 mx-auto mb-2" />
-                                    <span className="text-xs text-slate-300">Pay Bill</span>
+                                <button className="p-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-center transition-colors">
+                                    <CreditCard className="w-5 h-5 text-purple-600 mx-auto mb-2" />
+                                    <span className="text-xs text-gray-600">Pay Bill</span>
                                 </button>
-                                <button className="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-center transition-colors">
-                                    <Calendar className="w-5 h-5 text-orange-400 mx-auto mb-2" />
-                                    <span className="text-xs text-slate-300">Schedule</span>
+                                <button className="p-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-center transition-colors">
+                                    <Calendar className="w-5 h-5 text-orange-500 mx-auto mb-2" />
+                                    <span className="text-xs text-gray-600">Schedule</span>
                                 </button>
                             </div>
                         </div>
