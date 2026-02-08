@@ -321,71 +321,134 @@ async def process_with_agents(
     This function routes the message to the appropriate orchestrator
     based on the intent and context.
     """
-    # TODO: Integrate with actual agent orchestrators
-    # For now, return a mock response
+    from app.core.logging import get_logger
+    logger = get_logger(__name__)
     
-    # Simple intent detection
+    # Simple intent detection for routing
     message_lower = message.lower()
     
-    if any(word in message_lower for word in ["spend", "expense", "transaction", "budget", "money"]):
-        orchestrator = "orchestrator_1"
-        agent_name = "money_growth_agent"
-        response = (
-            "I've analyzed your recent transactions. "
-            "Your spending this month is within budget. "
-            "Would you like me to provide a detailed breakdown by category?"
-        )
-        suggestions = [
-            "Show spending by category",
-            "Compare with last month",
-            "Set a budget alert"
-        ]
-    elif any(word in message_lower for word in ["invest", "stock", "mutual fund", "sip", "portfolio"]):
-        orchestrator = "orchestrator_2"
-        agent_name = "investment_agent"
-        response = (
-            "Based on your risk profile and financial goals, "
-            "I can help you with investment recommendations. "
-            "What specific aspect would you like to explore?"
-        )
-        suggestions = [
-            "View portfolio summary",
-            "Get investment recommendations",
-            "Analyze market trends"
-        ]
-    elif any(word in message_lower for word in ["tax", "itr", "credit card", "loan"]):
-        orchestrator = "orchestrator_3"
-        agent_name = "itr_agent"
-        response = (
-            "I can help you with tax planning and financial products. "
-            "Would you like to calculate your tax liability or explore "
-            "credit card/loan options?"
-        )
-        suggestions = [
-            "Calculate income tax",
-            "Compare credit cards",
-            "Check loan eligibility"
-        ]
-    else:
-        orchestrator = "orchestrator_1"
-        agent_name = "router"
-        response = (
-            "Hello! I'm your AI financial assistant. I can help you with:\n\n"
-            "💰 **Money Management** - Track spending, budgets, categorize transactions\n"
-            "📈 **Investments** - Portfolio analysis, stock research, SIP recommendations\n"
-            "🏦 **Financial Products** - Credit cards, loans, tax planning\n\n"
-            "What would you like to know?"
-        )
-        suggestions = [
-            "Show my spending summary",
-            "Analyze my portfolio",
-            "Calculate my tax"
-        ]
-    
-    return {
-        "message": response,
-        "agent_name": agent_name,
-        "orchestrator": orchestrator,
-        "suggestions": suggestions,
-        "actions": []
-    }
+    try:
+        # Import the appropriate orchestrator based on intent
+        if any(word in message_lower for word in ["invest", "stock", "mutual fund", "sip", "portfolio", "market", "nifty", "sensex"]):
+            # Investment related - use Orchestrator 2
+            from agents.orchestrators import InvestmentOrchestrator
+            orchestrator = InvestmentOrchestrator()
+            orchestrator_name = "orchestrator_2"
+            
+            result = await orchestrator.route_request(
+                intent="investment_query",
+                user_input=message,
+                context={"user_id": str(user.id), **(context or {})}
+            )
+            
+            response = result.get("output", "I can help you with investment advice. What specific investment topic would you like to explore?")
+            agent_name = "investment_agent"
+            suggestions = [
+                "View my portfolio",
+                "Get stock recommendations",
+                "Analyze market trends"
+            ]
+            
+        elif any(word in message_lower for word in ["tax", "itr", "credit card", "loan", "emi"]):
+            # Financial products - use Orchestrator 3
+            from agents.orchestrators import FinancialProductsOrchestrator
+            orchestrator = FinancialProductsOrchestrator()
+            orchestrator_name = "orchestrator_3"
+            
+            result = await orchestrator.route_request(
+                intent="financial_products",
+                user_input=message,
+                context={"user_id": str(user.id), **(context or {})}
+            )
+            
+            response = result.get("output", "I can help you with tax planning, credit cards, and loans. What would you like to know?")
+            agent_name = "financial_products_agent"
+            suggestions = [
+                "Calculate my income tax",
+                "Compare credit cards",
+                "Check loan eligibility"
+            ]
+            
+        elif any(word in message_lower for word in ["spend", "expense", "transaction", "budget", "money", "saving", "category"]):
+            # Spending/Money management - use Orchestrator 1
+            from agents.orchestrators import MoneyManagementOrchestrator
+            orchestrator = MoneyManagementOrchestrator()
+            orchestrator_name = "orchestrator_1"
+            
+            result = await orchestrator.route_request(
+                intent="spending_analysis",
+                user_input=message,
+                context={"user_id": str(user.id), **(context or {})}
+            )
+            
+            response = result.get("output", "I can help you analyze your spending and manage your budget. What would you like to know?")
+            agent_name = "money_growth_agent"
+            suggestions = [
+                "Show spending by category",
+                "Compare with last month",
+                "Set a budget alert"
+            ]
+            
+        else:
+            # General query - use a simple LLM response
+            from langchain_openai import ChatOpenAI
+            from app.config import settings
+            
+            llm = ChatOpenAI(
+                model=settings.OPENAI_MODEL,
+                temperature=0.7,
+                api_key=settings.OPENAI_API_KEY
+            )
+            
+            # Create a helpful financial assistant response
+            system_message = """You are FinBuddy, an AI-powered financial assistant for Indian users. 
+            You help with:
+            - Money management (spending analysis, budgeting, categorization)
+            - Investment advice (stocks, mutual funds, SIPs on NSE/BSE)
+            - Financial products (credit cards, loans, tax planning)
+            
+            Be helpful, concise, and provide actionable advice. Use Indian Rupees (₹) for all amounts.
+            Format your response with clear sections and bullet points when appropriate."""
+            
+            from langchain_core.messages import SystemMessage, HumanMessage
+            
+            messages = [
+                SystemMessage(content=system_message),
+                HumanMessage(content=message)
+            ]
+            
+            ai_response = await llm.ainvoke(messages)
+            response = ai_response.content
+            orchestrator_name = "orchestrator_1"
+            agent_name = "finbuddy"
+            suggestions = [
+                "Show my spending summary",
+                "Analyze my investments",
+                "Calculate my tax"
+            ]
+        
+        logger.info(f"Agent response generated", agent=agent_name, orchestrator=orchestrator_name)
+        
+        return {
+            "message": response,
+            "agent_name": agent_name,
+            "orchestrator": orchestrator_name,
+            "suggestions": suggestions,
+            "actions": []
+        }
+        
+    except Exception as e:
+        logger.error(f"Error processing with agents: {str(e)}")
+        
+        # Fallback response
+        return {
+            "message": f"I'm your AI financial assistant. I can help you with:\n\n💰 **Money Management** - Track spending, budgets, categorize transactions\n📈 **Investments** - Portfolio analysis, stock research (NSE/BSE), SIP recommendations\n🏦 **Financial Products** - Credit cards, loans, tax planning (India)\n\nWhat would you like to know? Please try asking a specific question.",
+            "agent_name": "finbuddy",
+            "orchestrator": "orchestrator_1",
+            "suggestions": [
+                "Show my spending summary",
+                "Analyze my portfolio",
+                "Calculate my tax"
+            ],
+            "actions": []
+        }

@@ -17,6 +17,7 @@ import {
 import { DashboardLayout } from '@/components/layouts/DashboardLayout'
 import { formatRelativeTime } from '@/lib/utils'
 import { useAppDispatch, useAppSelector, RootState } from '@/store/hooks'
+import { api } from '@/lib/api'
 import {
     fetchConversations,
     createConversation,
@@ -84,44 +85,41 @@ export default function ChatPage() {
         setInput('')
         setIsTyping(true)
 
-        // Simulate AI response
-        setTimeout(() => {
+        try {
+            // Call the actual chat API
+            const response = await api.post('/chat/send', {
+                message: userMessage.content,
+                conversation_id: currentConversation?.id,
+                context: {}
+            })
+
             const aiResponse = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant' as const,
-                content: getAIResponse(userMessage.content),
+                content: response.data.message,
+                timestamp: new Date().toISOString(),
+                agent_name: response.data.agent_name || 'FinBuddy',
+            }
+            dispatch(addMessage(aiResponse))
+
+            // If suggestions are returned, you could use them
+            if (response.data.suggestions) {
+                console.log('AI Suggestions:', response.data.suggestions)
+            }
+        } catch (error: any) {
+            console.error('Chat API error:', error)
+            // Fallback error message
+            const errorResponse = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant' as const,
+                content: "I'm sorry, I couldn't process your request right now. Please check if the backend server is running and try again.",
                 timestamp: new Date().toISOString(),
                 agent_name: 'FinBuddy',
             }
-            dispatch(addMessage(aiResponse))
+            dispatch(addMessage(errorResponse))
+        } finally {
             setIsTyping(false)
-        }, 1500)
-    }
-
-    const getAIResponse = (query: string): string => {
-        const lower = query.toLowerCase()
-
-        if (lower.includes('spending') || lower.includes('expense')) {
-            return "Based on your transaction history, here's your spending analysis:\n\n📊 **This Month's Summary**\n• Total Spent: ₹42,000\n• Top Category: Food & Dining (₹12,500)\n• Vs Last Month: +8%\n\n💡 **Insights**\nYour dining expenses are 40% higher than typical. Consider cooking at home more to save ₹5,000/month.\n\nWould you like a detailed category breakdown?"
         }
-
-        if (lower.includes('invest') || lower.includes('stock')) {
-            return "I'd be happy to help with investment advice! Based on your profile:\n\n📈 **Risk Profile**: Moderate\n💰 **Monthly Investment Capacity**: ₹15,000\n\n🎯 **Recommendations**:\n1. **ELSS Mutual Funds** - Tax saving + growth\n2. **Index Funds** - Low-cost market exposure\n3. **PPF** - Safe, tax-free returns\n\n*Note: These are suggestions, not financial advice. Please consult a certified advisor for personalized guidance.*"
-        }
-
-        if (lower.includes('tax') || lower.includes('itr')) {
-            return "Let me help you with tax planning!\n\n📋 **Tax Comparison (FY 2024-25)**\n\n**Old Regime**: ₹72,000 tax\n**New Regime**: ₹65,000 tax\n\n✅ **Recommendation**: New regime saves you ₹7,000\n\n💡 **Optimization Tips**:\n• Max out 80C (₹1.5L available)\n• Claim 80D for health insurance\n• Consider NPS for additional ₹50K deduction\n\nWant me to calculate your exact tax liability?"
-        }
-
-        if (lower.includes('credit card') || lower.includes('card')) {
-            return "Based on your spending patterns, here are my top credit card recommendations:\n\n💳 **For Your Profile**\n\n1. **HDFC Millennia**\n   • 5% cashback on online spends\n   • Perfect for your shopping habits\n\n2. **Amazon Pay ICICI**\n   • 5% on Amazon, 2% elsewhere\n   • No annual fee!\n\n3. **Axis Flipkart**\n   • Great for e-commerce\n   • 5% unlimited cashback\n\nWould you like to compare features in detail?"
-        }
-
-        if (lower.includes('save') || lower.includes('saving')) {
-            return "Great question! Here's how you can boost your savings:\n\n🎯 **Current Savings Rate**: 50.6%\n\n💡 **Quick Wins**:\n1. **Reduce dining out** - Save ₹5,000/month\n2. **Cancel unused subscriptions** - Save ₹800/month\n3. **Switch to UPI for fuel** - Save ₹200/month\n\n📈 **Potential Monthly Savings**: ₹6,000 extra!\n\nShall I set up a personalized savings plan?"
-        }
-
-        return "I understand you're asking about financial matters. Let me help you with that!\n\nI can assist with:\n• 📊 Spending analysis\n• 💰 Investment recommendations\n• 📋 Tax planning\n• 💳 Credit card comparison\n• 🏦 Loan eligibility\n\nCould you please provide more details about what you'd like to know?"
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {

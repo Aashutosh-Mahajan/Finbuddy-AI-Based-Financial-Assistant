@@ -18,8 +18,10 @@ import {
     Info,
     CheckCircle,
     AlertCircle,
+    Search,
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/layouts/DashboardLayout'
+import { api } from '@/lib/api'
 
 // Type definitions
 interface Tool {
@@ -422,23 +424,145 @@ function CreditCardMatcher({ onClose }: { onClose: () => void }) {
     const [spendingCategory, setSpendingCategory] = useState<string>('general')
     const [monthlySpending, setMonthlySpending] = useState<number>(50000)
     const [annualIncome, setAnnualIncome] = useState<number>(1000000)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [creditCards, setCreditCards] = useState<any[]>([])
+    const [selectedCard, setSelectedCard] = useState<any | null>(null)
+    const [hasSearched, setHasSearched] = useState<boolean>(false)
 
-    const creditCards = [
-        { name: 'HDFC Regalia', category: 'travel', minIncome: 1200000, rewards: '4X points on travel', fee: 2500, cashback: '5%' },
-        { name: 'SBI SimplyCLICK', category: 'online', minIncome: 300000, rewards: '10X on partner sites', fee: 499, cashback: '2.5%' },
-        { name: 'ICICI Amazon Pay', category: 'shopping', minIncome: 300000, rewards: '5% on Amazon', fee: 0, cashback: '5%' },
-        { name: 'Axis Flipkart', category: 'shopping', minIncome: 300000, rewards: '5% on Flipkart', fee: 500, cashback: '4%' },
-        { name: 'HDFC Millennia', category: 'general', minIncome: 500000, rewards: '5% on Amazon/FK', fee: 1000, cashback: '2.5%' },
-        { name: 'Amex Membership', category: 'premium', minIncome: 2400000, rewards: 'Airport lounges', fee: 4500, cashback: '1%' },
-        { name: 'ICICI Coral', category: 'dining', minIncome: 600000, rewards: '2X on dining', fee: 500, cashback: '2%' },
-        { name: 'Axis ACE', category: 'utility', minIncome: 300000, rewards: '5% on utilities', fee: 499, cashback: '2%' },
-    ]
+    const searchCreditCards = async () => {
+        setIsLoading(true)
+        setHasSearched(true)
+        try {
+            const response = await api.post('/credit-cards/recommendations', {
+                spending_category: spendingCategory,
+                monthly_spending: monthlySpending,
+                annual_income: annualIncome,
+                country: 'India',
+                max_results: 8
+            })
+            setCreditCards(response.data.cards || [])
+        } catch (error) {
+            console.error('Error fetching credit cards:', error)
+            // Fallback to static data if API fails
+            setCreditCards([
+                { id: 'hdfc-regalia', name: 'HDFC Regalia', issuer: 'HDFC Bank', annual_fee: '₹2,500', best_for: ['travel', 'premium'], rewards_summary: '4X reward points on travel & dining', key_benefits: ['Complimentary airport lounge access', 'Golf privileges', 'Travel insurance up to ₹1 Cr', 'Milestone benefits'], eligibility: 'Annual income ≥ ₹12 Lakhs' },
+                { id: 'sbi-simplyclick', name: 'SBI SimplyCLICK', issuer: 'SBI Card', annual_fee: '₹499', best_for: ['online', 'shopping'], rewards_summary: '10X rewards on partner sites', key_benefits: ['10X on Amazon, Cleartrip, etc.', '5X on other online spends', 'Welcome gift ₹500 Amazon voucher', 'No annual fee on ₹1L spend'], eligibility: 'Annual income ≥ ₹3 Lakhs' },
+                { id: 'icici-amazon-pay', name: 'Amazon Pay ICICI', issuer: 'ICICI Bank', annual_fee: 'FREE', best_for: ['shopping', 'amazon'], rewards_summary: '5% cashback on Amazon for Prime', key_benefits: ['5% on Amazon (Prime members)', '2% on paying via Amazon Pay', '1% on other spends', 'No joining/annual fee'], eligibility: 'Annual income ≥ ₹3 Lakhs' },
+                { id: 'axis-flipkart', name: 'Axis Flipkart', issuer: 'Axis Bank', annual_fee: '₹500', best_for: ['shopping', 'flipkart'], rewards_summary: '5% cashback on Flipkart', key_benefits: ['5% unlimited cashback on Flipkart', '4% on Myntra, 2Up, Cleartrip', '1.5% on all other spends', 'No annual fee on ₹2L spend'], eligibility: 'Annual income ≥ ₹3 Lakhs' },
+                { id: 'hdfc-millennia', name: 'HDFC Millennia', issuer: 'HDFC Bank', annual_fee: '₹1,000', best_for: ['general', 'online'], rewards_summary: '5% cashback on online shopping', key_benefits: ['5% on Amazon, Flipkart, etc.', '2.5% on all other online spends', '1% on offline spends', 'PayBack points integration'], eligibility: 'Annual income ≥ ₹5 Lakhs' },
+            ])
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
-    const eligibleCards = creditCards.filter(card => annualIncome >= card.minIncome && (spendingCategory === 'general' || card.category === spendingCategory || card.category === 'general'))
     const potentialCashback = (monthlySpending * 0.025 * 12)
 
     return (
         <div className="space-y-6">
+            {/* Card Detail Modal */}
+            {selectedCard && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setSelectedCard(null)}>
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-6 border-b border-mono-200">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl flex items-center justify-center">
+                                        <CreditCard className="w-6 h-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-mono-900">{selectedCard.name}</h3>
+                                        <p className="text-sm text-mono-500">{selectedCard.issuer || 'Credit Card'}</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setSelectedCard(null)} className="p-2 hover:bg-mono-100 rounded-lg">
+                                    <X className="w-5 h-5 text-mono-500" />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="p-6 space-y-5">
+                            {/* Fees Section */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-mono-50 rounded-xl">
+                                    <p className="text-xs text-mono-500 uppercase mb-1">Annual Fee</p>
+                                    <p className="text-lg font-bold text-mono-900">{selectedCard.annual_fee || 'N/A'}</p>
+                                </div>
+                                <div className="p-4 bg-mono-50 rounded-xl">
+                                    <p className="text-xs text-mono-500 uppercase mb-1">Joining Fee</p>
+                                    <p className="text-lg font-bold text-mono-900">{selectedCard.joining_fee || selectedCard.annual_fee || 'N/A'}</p>
+                                </div>
+                            </div>
+
+                            {/* Rewards Summary */}
+                            {selectedCard.rewards_summary && (
+                                <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
+                                    <p className="text-xs text-purple-600 uppercase mb-1 font-semibold">Rewards</p>
+                                    <p className="text-mono-800">{selectedCard.rewards_summary}</p>
+                                </div>
+                            )}
+
+                            {/* Best For Tags */}
+                            {selectedCard.best_for && selectedCard.best_for.length > 0 && (
+                                <div>
+                                    <p className="text-xs text-mono-500 uppercase mb-2">Best For</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedCard.best_for.map((tag: string, idx: number) => (
+                                            <span key={idx} className="px-3 py-1 bg-mono-100 text-mono-700 rounded-full text-sm capitalize">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Key Benefits */}
+                            {selectedCard.key_benefits && selectedCard.key_benefits.length > 0 && (
+                                <div>
+                                    <p className="text-xs text-mono-500 uppercase mb-2">Key Benefits</p>
+                                    <ul className="space-y-2">
+                                        {selectedCard.key_benefits.map((benefit: string, idx: number) => (
+                                            <li key={idx} className="flex items-start space-x-2">
+                                                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                                <span className="text-mono-700 text-sm">{benefit}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Eligibility */}
+                            {selectedCard.eligibility && (
+                                <div className="p-4 bg-mono-900 rounded-xl">
+                                    <p className="text-xs text-mono-400 uppercase mb-1">Eligibility</p>
+                                    <p className="text-white">{selectedCard.eligibility}</p>
+                                </div>
+                            )}
+
+                            {/* Sources */}
+                            {selectedCard.sources && selectedCard.sources.length > 0 && (
+                                <div>
+                                    <p className="text-xs text-mono-500 uppercase mb-2">Sources</p>
+                                    <div className="space-y-1">
+                                        {selectedCard.sources.map((url: string, idx: number) => (
+                                            <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="block text-sm text-purple-600 hover:underline truncate">
+                                                {url}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Apply Button */}
+                            {selectedCard.apply_url && (
+                                <a href={selectedCard.apply_url} target="_blank" rel="noopener noreferrer" className="block w-full py-3 bg-purple-600 hover:bg-purple-700 text-white text-center rounded-xl font-semibold transition-colors">
+                                    Apply Now
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="grid md:grid-cols-3 gap-4">
                 <div>
                     <label className="text-sm text-mono-600 mb-1 block">Primary Spending</label>
@@ -450,6 +574,8 @@ function CreditCardMatcher({ onClose }: { onClose: () => void }) {
                         <option value="dining">Dining</option>
                         <option value="online">Online</option>
                         <option value="utility">Bills & Utilities</option>
+                        <option value="fuel">Fuel</option>
+                        <option value="premium">Premium/Lifestyle</option>
                     </select>
                 </div>
                 <div>
@@ -464,31 +590,78 @@ function CreditCardMatcher({ onClose }: { onClose: () => void }) {
                 </div>
             </div>
 
+            {/* Search Button */}
+            <button 
+                onClick={searchCreditCards} 
+                disabled={isLoading}
+                className="w-full py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white rounded-xl font-semibold transition-colors flex items-center justify-center space-x-2"
+            >
+                {isLoading ? (
+                    <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Searching with AI...</span>
+                    </>
+                ) : (
+                    <>
+                        <Search className="w-5 h-5" />
+                        <span>Find Best Credit Cards</span>
+                    </>
+                )}
+            </button>
+
             <div className="p-4 bg-purple-50 rounded-xl border-2 border-purple-500">
                 <p className="text-mono-700">Potential Annual Savings: <span className="text-purple-600 font-bold">{formatCurrency(potentialCashback)}</span> with the right credit card!</p>
             </div>
 
             <div className="space-y-3 max-h-80 overflow-y-auto">
-                {eligibleCards.length > 0 ? eligibleCards.map((card, idx) => (
-                    <div key={idx} className="p-4 bg-mono-100 rounded-xl border border-mono-200 hover:border-purple-400 transition-all">
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-3">
-                                <CreditCard className="w-6 h-6 text-purple-600" />
-                                <div>
-                                    <h4 className="font-semibold text-mono-900">{card.name}</h4>
-                                    <p className="text-xs text-mono-500">{card.rewards}</p>
+                {isLoading ? (
+                    <div className="text-center py-12">
+                        <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
+                        <p className="text-mono-600">AI is searching for the best credit cards...</p>
+                        <p className="text-xs text-mono-400 mt-1">This may take a few seconds</p>
+                    </div>
+                ) : creditCards.length > 0 ? (
+                    creditCards.map((card, idx) => (
+                        <div 
+                            key={card.id || idx} 
+                            onClick={() => setSelectedCard(card)}
+                            className="p-4 bg-mono-100 rounded-xl border border-mono-200 hover:border-purple-400 hover:shadow-md transition-all cursor-pointer"
+                        >
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center space-x-3">
+                                    <CreditCard className="w-6 h-6 text-purple-600" />
+                                    <div>
+                                        <h4 className="font-semibold text-mono-900">{card.name}</h4>
+                                        <p className="text-xs text-mono-500">{card.issuer || 'Credit Card'}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-purple-600 font-bold text-sm">{card.annual_fee || 'Check fee'}</p>
+                                    <p className="text-xs text-mono-500">Annual Fee</p>
                                 </div>
                             </div>
-                            <div className="text-right">
-                                <p className="text-green-600 font-bold">{card.cashback}</p>
-                                <p className="text-xs text-mono-500">Fee: ₹{card.fee}/yr</p>
+                            {card.rewards_summary && (
+                                <p className="text-sm text-mono-600 mt-2 line-clamp-2">{card.rewards_summary}</p>
+                            )}
+                            <div className="flex items-center justify-between mt-3">
+                                <div className="flex flex-wrap gap-1">
+                                    {(card.best_for || []).slice(0, 3).map((tag: string, i: number) => (
+                                        <span key={i} className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs capitalize">{tag}</span>
+                                    ))}
+                                </div>
+                                <span className="text-xs text-purple-600 font-medium">View Details →</span>
                             </div>
                         </div>
-                    </div>
-                )) : (
+                    ))
+                ) : hasSearched ? (
                     <div className="text-center py-8 text-mono-500">
                         <CreditCard className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p>No cards match your criteria. Try adjusting filters.</p>
+                        <p>No cards found. Try adjusting your criteria.</p>
+                    </div>
+                ) : (
+                    <div className="text-center py-8 text-mono-500">
+                        <Search className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                        <p>Click "Find Best Credit Cards" to search using AI</p>
                     </div>
                 )}
             </div>

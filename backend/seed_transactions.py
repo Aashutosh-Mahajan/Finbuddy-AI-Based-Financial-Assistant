@@ -124,7 +124,7 @@ async def seed_transactions():
             {"amount": 7500, "type": TransactionType.DEBIT, "category": TransactionCategory.INVESTMENTS, 
              "merchant": "Groww", "description": "Index Fund - Nifty 50", "days_ago": 11, "subcategory": "Index Funds"},
             {"amount": 3000, "type": TransactionType.DEBIT, "category": TransactionCategory.INVESTMENTS, 
-             "merchant": "INDmoney", "description": "US Stocks ETF", "days_ago": 19, "subcategory": "International Stocks"},
+             "merchant": "INDmoney", "description": "Gold ETF - SBI Gold", "days_ago": 19, "subcategory": "Gold ETF"},
             
             # Insurance & Financial Services (NEEDS)
             {"amount": 4500, "type": TransactionType.DEBIT, "category": TransactionCategory.NEEDS, 

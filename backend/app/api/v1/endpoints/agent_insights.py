@@ -126,7 +126,7 @@ async def get_investment_advisory(
             else:
                 analysis_data["market_sentiment"] = "Neutral"
         
-        # Always provide growth recommendations (top 10 equity/MF options)
+        # Always provide growth recommendations (top 5 equity/MF options)
         # These are curated based on market data and suitable for moderate risk profiles
         growth_recs = [
             {"type": "Mutual Fund", "name": "Nifty 50 Index Fund", "return": 12.5, "rationale": "Low-cost diversified exposure to India's top 50 companies. Ideal core holding for long-term wealth creation.", "allocation": 25},
@@ -134,25 +134,15 @@ async def get_investment_advisory(
             {"type": "Mutual Fund", "name": "Parag Parikh Flexi Cap Fund", "return": 15.8, "rationale": "Quality-focused fund with global diversification and consistent long-term performance.", "allocation": 15},
             {"type": "SIP", "name": "ICICI Prudential Flexi Cap Fund", "return": 14.5, "rationale": "Flexible allocation across market caps based on market conditions.", "allocation": 15},
             {"type": "ETF", "name": "Nippon India ETF Nifty BeES", "return": 12.0, "rationale": "Low expense ratio ETF tracking Nifty 50 for passive investors.", "allocation": 10},
-            {"type": "Mutual Fund", "name": "Axis Bluechip Fund", "return": 13.5, "rationale": "Large-cap focused fund with quality stock selection and lower volatility.", "allocation": 10},
-            {"type": "ETF", "name": "SBI Gold ETF", "return": 8.5, "rationale": "Portfolio hedge against inflation and market volatility.", "allocation": 5},
-            {"type": "Mutual Fund", "name": "UTI Nifty Next 50 Index Fund", "return": 14.2, "rationale": "Exposure to the next set of emerging large-cap companies.", "allocation": 0},
-            {"type": "SIP", "name": "SBI Small Cap Fund", "return": 19.5, "rationale": "High growth potential with higher risk; suitable for long-term horizon.", "allocation": 0},
-            {"type": "ETF", "name": "Nifty Bank ETF", "return": 14.0, "rationale": "Focused exposure to India's banking sector growth story.", "allocation": 0},
         ]
         
-        # Always provide safety recommendations (top 10 fixed income options)
+        # Always provide safety recommendations (top 5 fixed income options)
         safety_recs = [
             {"type": "FD", "name": "SBI Fixed Deposit", "rate": 7.1, "duration": "5 Years", "safety": "Very High", "maturityVal": 142175, "allocation": 20},
             {"type": "Gov Scheme", "name": "Public Provident Fund (PPF)", "rate": 7.1, "duration": "15 Years", "safety": "Sovereign", "maturityVal": "Tax-Free Returns", "allocation": 20},
             {"type": "Gov Scheme", "name": "National Savings Certificate (NSC)", "rate": 7.7, "duration": "5 Years", "safety": "Sovereign", "maturityVal": 146000, "allocation": 15},
             {"type": "RD", "name": "Post Office Recurring Deposit", "rate": 6.7, "duration": "5 Years", "safety": "Sovereign", "maturityVal": 135000, "allocation": 15},
             {"type": "FD", "name": "HDFC Bank Fixed Deposit", "rate": 7.5, "duration": "5 Years", "safety": "High", "maturityVal": 144995, "allocation": 10},
-            {"type": "Gov Scheme", "name": "Sukanya Samriddhi Yojana", "rate": 8.2, "duration": "21 Years", "safety": "Sovereign", "maturityVal": "Tax-Free (Girl Child)", "allocation": 10},
-            {"type": "Bond", "name": "RBI Floating Rate Bonds", "rate": 8.05, "duration": "7 Years", "safety": "Sovereign", "maturityVal": 171000, "allocation": 10},
-            {"type": "Debt Fund", "name": "HDFC Short Term Debt Fund", "rate": 7.2, "duration": "1-3 Years", "safety": "High", "maturityVal": "Variable", "allocation": 0},
-            {"type": "FD", "name": "ICICI Bank Fixed Deposit", "rate": 7.25, "duration": "5 Years", "safety": "High", "maturityVal": 143000, "allocation": 0},
-            {"type": "Debt Fund", "name": "SBI Liquid Fund", "rate": 6.5, "duration": "Anytime", "safety": "High", "maturityVal": "Variable", "allocation": 0},
         ]
         
         # Get aggregated advice from orchestrator or use default
@@ -186,11 +176,6 @@ async def get_investment_advisory(
                 {"type": "Mutual Fund", "name": "HDFC Mid-Cap Fund", "return": 18.2, "rationale": "Growth potential in quality mid-caps", "allocation": 20},
                 {"type": "Stock", "name": "IT Sector ETF", "return": 15.5, "rationale": "Exposure to technology growth story", "allocation": 15},
                 {"type": "ETF", "name": "Gold ETF", "return": 8.5, "rationale": "Safe haven and portfolio diversification", "allocation": 10},
-                {"type": "Mutual Fund", "name": "Parag Parikh Flexi Cap", "return": 15.2, "rationale": "Quality-focused flexi-cap exposure", "allocation": 0},
-                {"type": "Mutual Fund", "name": "UTI Nifty Next 50 Index Fund", "return": 13.1, "rationale": "Diversification beyond top 50", "allocation": 0},
-                {"type": "SIP", "name": "SBI Small Cap Fund", "return": 19.0, "rationale": "Higher growth potential (higher volatility)", "allocation": 0},
-                {"type": "ETF", "name": "Nifty Bank ETF", "return": 14.0, "rationale": "Banking sector exposure", "allocation": 0},
-                {"type": "Stock", "name": "Sensex Index Fund", "return": 12.0, "rationale": "Core large-cap allocation", "allocation": 0},
             ]},
             safety_recommendations={"recommendations": [
                 {"type": "FD", "name": "SBI Fixed Deposit", "rate": 7.1, "duration": "5 Years", "safety": "High", "maturityVal": 150000},
@@ -198,11 +183,6 @@ async def get_investment_advisory(
                 {"type": "Gov Scheme", "name": "Public Provident Fund", "rate": 7.1, "duration": "15 Years", "safety": "Very High", "maturityVal": "Tax Free"},
                 {"type": "PSU Bond", "name": "REC Bond", "rate": 7.5, "duration": "3 Years", "safety": "High", "maturityVal": 120000},
                 {"type": "Gov Scheme", "name": "Senior Citizen Savings", "rate": 8.2, "duration": "5 Years", "safety": "Very High", "maturityVal": 165000},
-                {"type": "Gov Scheme", "name": "National Savings Certificate", "rate": 7.7, "duration": "5 Years", "safety": "Very High", "maturityVal": 145000},
-                {"type": "Gov Scheme", "name": "Post Office MIS", "rate": 7.4, "duration": "5 Years", "safety": "Very High", "maturityVal": 140000},
-                {"type": "Debt Fund", "name": "Liquid Fund", "rate": 6.3, "duration": "Anytime", "safety": "High", "maturityVal": 130000},
-                {"type": "Debt Fund", "name": "Short Duration Debt Fund", "rate": 6.8, "duration": "1-3 Years", "safety": "High", "maturityVal": 135000},
-                {"type": "Bond", "name": "AAA Corporate Bond Fund", "rate": 7.2, "duration": "3-5 Years", "safety": "High", "maturityVal": 145000},
             ]},
             market_news={"news": "Markets showing steady growth with positive momentum in banking and IT sectors."} if request.include_news else None,
             aggregated_advice="Consider a balanced portfolio: 60% equity (growth-oriented) + 40% fixed income (safety and stability)"

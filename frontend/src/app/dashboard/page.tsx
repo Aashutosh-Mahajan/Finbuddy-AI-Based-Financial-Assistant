@@ -43,15 +43,19 @@ export default function DashboardPage() {
     const savingsRate = summary?.savings_rate || 0
     
     // Improved health score calculation:
-    // - Negative savings: 0-30 score (Needs Work)
+    // - Very negative (<-50%): 0-10 score (Critical)
+    // - Negative (-50% to 0%): 10-30 score (Needs Work)
     // - 0-10% savings: 30-50 score (Fair)
     // - 10-20% savings: 50-70 score (Good)
     // - 20-30% savings: 70-85 score (Very Good)
     // - 30%+ savings: 85-100 score (Excellent)
     let healthScore = 0
-    if (savingsRate < 0) {
-        // Negative savings rate: scale from 0-30 based on how negative
-        healthScore = Math.max(0, Math.round(30 + savingsRate)) // -30% = 0, 0% = 30
+    if (savingsRate < -50) {
+        // Very negative: scale from 0-10
+        healthScore = Math.max(0, Math.round(10 + (savingsRate + 50) * 0.2))
+    } else if (savingsRate < 0) {
+        // Negative savings rate: scale from 10-30 based on how negative
+        healthScore = Math.round(30 + (savingsRate * 0.4)) // -50% = 10, 0% = 30
     } else if (savingsRate < 10) {
         // 0-10% savings: scale from 30-50
         healthScore = Math.round(30 + (savingsRate * 2))
@@ -268,18 +272,18 @@ export default function DashboardPage() {
                         <div className="space-y-1">
                             {transactions && transactions.length > 0 ? (
                                 transactions.slice(0, 5).map((tx: any) => (
-                                    <div key={tx.id} className="flex justify-between items-center p-3 hover:bg-mono-100/50 rounded-xl transition-all duration-300 cursor-pointer table-row">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 rounded-xl bg-mono-100 flex items-center justify-center">
+                                    <div key={tx.id} className="flex justify-between items-center p-3 hover:bg-mono-100/50 rounded-xl transition-all duration-300 cursor-pointer">
+                                        <div className="flex items-center space-x-3 flex-1 min-w-0">
+                                            <div className="w-10 h-10 rounded-xl bg-mono-100 flex items-center justify-center flex-shrink-0">
                                                 {getCategoryIcon(tx.category)}
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-mono-900">{tx.merchant || tx.description || 'Transaction'}</p>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-medium text-mono-900 truncate">{tx.merchant || tx.description || 'Transaction'}</p>
                                                 <p className="text-xs text-mono-500">{tx.category} • {formatDate(tx.date || tx.transaction_date)}</p>
                                             </div>
                                         </div>
-                                        <span className={`text-sm font-bold ${tx.type === 'credit' ? 'text-mono-900' : 'text-mono-600'}`}>
-                                            {tx.type === 'credit' ? '+' : '-'} {formatCurrency(tx.amount)}
+                                        <span className={`text-sm font-bold flex-shrink-0 ml-3 ${tx.type === 'credit' ? 'text-green-600' : 'text-mono-600'}`}>
+                                            {tx.type === 'credit' ? '+' : '-'}{formatCurrency(tx.amount)}
                                         </span>
                                     </div>
                                 ))

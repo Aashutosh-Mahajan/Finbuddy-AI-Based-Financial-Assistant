@@ -296,9 +296,6 @@ export default function Home() {
                                     <span>Start Free Trial</span>
                                     <ArrowRight className="w-5 h-5" />
                                 </Link>
-                                <Link href="/demo" className="px-8 py-4 bg-white text-gray-900 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-all border border-gray-200 shadow-lg">
-                                    Watch Demo
-                                </Link>
                             </div>
                         </motion.div>
 

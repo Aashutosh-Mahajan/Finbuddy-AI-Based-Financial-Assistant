@@ -18,6 +18,7 @@ import {
     Loader2,
     Banknote,
     TrendingDown,
+    EyeOff,
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/layouts/DashboardLayout'
 import { formatCurrency, formatDate, getCategoryColor, getCategoryIcon } from '@/lib/utils'
@@ -86,6 +87,35 @@ export default function TransactionsPage() {
             console.error('Error fetching cash data:', error)
         } finally {
             setIsCashLoading(false)
+        }
+    }
+
+    // Hide (delete) transaction
+    const handleHideTransaction = async (transactionId: string) => {
+        if (!confirm('Are you sure you want to hide this transaction? This action cannot be undone.')) {
+            return
+        }
+
+        try {
+            const token = localStorage.getItem('token')
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/transactions/${transactionId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+
+            if (response.ok) {
+                // Refresh transactions and stats
+                dispatch(fetchTransactions({}))
+                dispatch(fetchTransactionStats('month'))
+                fetchCashData()
+                setWidgetKey(prev => prev + 1)
+            } else {
+                console.error('Failed to hide transaction')
+            }
+        } catch (error) {
+            console.error('Error hiding transaction:', error)
         }
     }
 
@@ -227,30 +257,30 @@ export default function TransactionsPage() {
                     <div className="glass-card p-6 animate-pulse">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center space-x-4">
-                                <div className="w-14 h-14 rounded-2xl bg-slate-700" />
+                                <div className="w-14 h-14 rounded-2xl bg-mono-200" />
                                 <div>
-                                    <div className="h-6 bg-slate-700 rounded w-40 mb-2" />
-                                    <div className="h-4 bg-slate-700/50 rounded w-48" />
+                                    <div className="h-6 bg-mono-200 rounded w-40 mb-2" />
+                                    <div className="h-4 bg-mono-100 rounded w-48" />
                                 </div>
                             </div>
-                            <div className="h-8 bg-slate-700 rounded w-32" />
+                            <div className="h-8 bg-mono-200 rounded w-32" />
                         </div>
                     </div>
-                ) : cashData && cashData.estimated_untracked_cash >= 0 ? (
+                ) : cashData && cashData.estimated_untracked_cash > 0 ? (
                     <motion.div
-                        className="glass-card p-6 bg-gradient-to-br from-amber-900/30 to-orange-900/30 border-2 border-amber-500/30"
+                        className="glass-card p-6 border-l-4 border-l-mono-900"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
                     >
                         <div className="flex items-start justify-between mb-6">
                             <div className="flex items-center space-x-4">
-                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
-                                    <Banknote className="w-7 h-7 text-white" />
+                                <div className="w-14 h-14 rounded-2xl bg-mono-100 flex items-center justify-center">
+                                    <Banknote className="w-7 h-7 text-mono-700" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-white mb-1">Untracked Cash</h3>
-                                    <p className="text-sm text-amber-400">
+                                    <h3 className="text-xl font-bold text-mono-900 mb-1">Untracked Cash</h3>
+                                    <p className="text-sm text-mono-500">
                                         {cashData.days_since_withdrawal !== null 
                                             ? `${cashData.days_since_withdrawal} days since last ATM withdrawal`
                                             : 'Cash reconciliation status'
@@ -259,53 +289,53 @@ export default function TransactionsPage() {
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className="text-3xl font-bold text-amber-400">
+                                <p className="text-3xl font-bold text-mono-900">
                                     {formatCurrency(cashData.estimated_untracked_cash)}
                                 </p>
-                                <p className="text-xs text-slate-400 mt-1">Estimated unaccounted</p>
+                                <p className="text-xs text-mono-500 mt-1">Estimated unaccounted</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                            <div className="bg-mono-50 rounded-lg p-4 border border-mono-200">
                                 <div className="flex items-center justify-between mb-2">
-                                    <p className="text-xs text-slate-400 font-medium">Total Withdrawn</p>
-                                    <ArrowUpRight className="w-4 h-4 text-green-400" />
+                                    <p className="text-xs text-mono-500 font-medium">Total Withdrawn</p>
+                                    <ArrowUpRight className="w-4 h-4 text-mono-700" />
                                 </div>
-                                <p className="text-xl font-bold text-white">{formatCurrency(cashData.total_withdrawn)}</p>
+                                <p className="text-xl font-bold text-mono-900">{formatCurrency(cashData.total_withdrawn)}</p>
                             </div>
-                            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                            <div className="bg-mono-50 rounded-lg p-4 border border-mono-200">
                                 <div className="flex items-center justify-between mb-2">
-                                    <p className="text-xs text-slate-400 font-medium">Tracked Spending</p>
-                                    <TrendingDown className="w-4 h-4 text-blue-400" />
+                                    <p className="text-xs text-mono-500 font-medium">Tracked Spending</p>
+                                    <TrendingDown className="w-4 h-4 text-mono-600" />
                                 </div>
-                                <p className="text-xl font-bold text-white">{formatCurrency(cashData.tracked_cash_spend)}</p>
+                                <p className="text-xl font-bold text-mono-900">{formatCurrency(cashData.tracked_cash_spend)}</p>
                             </div>
-                            <div className="bg-amber-500/10 rounded-lg p-4 border border-amber-500/30">
+                            <div className="bg-mono-100 rounded-lg p-4 border border-mono-300">
                                 <div className="flex items-center justify-between mb-2">
-                                    <p className="text-xs text-amber-400 font-medium">Untracked Amount</p>
-                                    <Wallet className="w-4 h-4 text-amber-400" />
+                                    <p className="text-xs text-mono-600 font-medium">Untracked Amount</p>
+                                    <Wallet className="w-4 h-4 text-mono-700" />
                                 </div>
-                                <p className="text-xl font-bold text-amber-400">{formatCurrency(cashData.estimated_untracked_cash)}</p>
+                                <p className="text-xl font-bold text-mono-900">{formatCurrency(cashData.estimated_untracked_cash)}</p>
                             </div>
                         </div>
 
                         {/* Progress Bar */}
                         <div className="mb-4">
-                            <div className="flex justify-between text-xs text-slate-400 mb-2">
+                            <div className="flex justify-between text-xs text-mono-500 mb-2">
                                 <span>Cash Flow Tracking</span>
-                                <span>{Math.round((cashData.tracked_cash_spend / cashData.total_withdrawn) * 100)}% tracked</span>
+                                <span>{cashData.total_withdrawn > 0 ? Math.round((cashData.tracked_cash_spend / cashData.total_withdrawn) * 100) : 0}% tracked</span>
                             </div>
-                            <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div className="h-2 bg-mono-100 rounded-full overflow-hidden">
                                 <div 
-                                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500"
-                                    style={{ width: `${Math.min((cashData.tracked_cash_spend / cashData.total_withdrawn) * 100, 100)}%` }}
+                                    className="h-full bg-mono-900 rounded-full transition-all duration-500"
+                                    style={{ width: `${cashData.total_withdrawn > 0 ? Math.min((cashData.tracked_cash_spend / cashData.total_withdrawn) * 100, 100) : 0}%` }}
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
-                            <p className="text-sm text-slate-400">
+                        <div className="flex items-center justify-between pt-4 border-t border-mono-200">
+                            <p className="text-sm text-mono-500">
                                 💡 Add missing cash expenses to improve tracking accuracy
                             </p>
                             <button 
@@ -318,24 +348,24 @@ export default function TransactionsPage() {
                     </motion.div>
                 ) : cashData && cashData.estimated_untracked_cash === 0 ? (
                     <motion.div
-                        className="glass-card p-6 bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-2 border-green-500/30"
+                        className="glass-card p-6 border-l-4 border-l-green-500"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
-                                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                                    <Wallet className="w-6 h-6 text-green-400" />
+                                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                                    <Wallet className="w-6 h-6 text-green-600" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-white">All Cash Tracked! 🎉</h3>
-                                    <p className="text-sm text-slate-400">You've accounted for all your cash withdrawals</p>
+                                    <h3 className="text-lg font-semibold text-mono-900">All Cash Tracked! 🎉</h3>
+                                    <p className="text-sm text-mono-500">You've accounted for all your cash withdrawals</p>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className="text-2xl font-bold text-green-400">{formatCurrency(0)}</p>
-                                <p className="text-xs text-slate-400">Untracked</p>
+                                <p className="text-2xl font-bold text-green-600">{formatCurrency(0)}</p>
+                                <p className="text-xs text-mono-500">Untracked</p>
                             </div>
                         </div>
                     </motion.div>
@@ -395,6 +425,7 @@ export default function TransactionsPage() {
                                             <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
                                             <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
                                             <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider text-right">Amount</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider text-center">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
@@ -422,11 +453,20 @@ export default function TransactionsPage() {
                                                         }`}>
                                                         {t.transaction_type === 'credit' || t.type === 'credit' ? '+' : '-'}{formatCurrency(t.amount)}
                                                     </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                        <button
+                                                            onClick={() => handleHideTransaction(t.id)}
+                                                            className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                                            title="Hide transaction"
+                                                        >
+                                                            <EyeOff className="w-4 h-4" />
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan={4} className="px-6 py-12 text-center">
+                                                <td colSpan={5} className="px-6 py-12 text-center">
                                                     <CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-400" />
                                                     <p className="text-gray-600">No transactions found</p>
                                                     <p className="text-sm text-gray-400 mt-1">Add your first transaction to get started</p>
